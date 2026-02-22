@@ -1869,6 +1869,73 @@ const CHORD_DB = {
     V('Barre 7fr',3, 7, [ 1, 3, 1, 2, 1, 1], {fret:1,from:0,to:5},   'E7-shape at 7'),
   ],
   'Bmaj7': [V('Barre 2fr',2,2,[-1,1,3,2,3,1],{fret:1,from:1,to:5},'Am-shape variant at 2')],
+
+  /* ── add9 / add2 ── */
+  'Cadd9': [
+    V('Open',    1, 1, [ 0, 3, 2, 0, 3, 3], null, 'Ring=A, Middle=D, Pinky+Index on B+e'),
+    V('Easy',    1, 1, [-1,-1, 2, 0, 3, 3], null,  'Skip low strings — easy 4-string version'),
+  ],
+  'Dadd9': [V('Open',1,1,[-1,-1,0,2,3,0],null,'Leave e open — same shape as Dsus2 with Ring')],
+  'Eadd9': [V('Open',1,1,[0,2,2,1,0,2],null,'Add pinky on e at fret 2')],
+
+  /* ── Minor 7ths ── */
+  'Em7': [
+    V('Open',    1, 1, [ 0, 2, 2, 0, 3, 0], null, 'Add Ring on B — easiest m7'),
+    V('Open 2',  1, 1, [ 0, 2, 0, 0, 3, 0], null,  'Leave D open — darker sound'),
+    V('Barre 7fr',3,7, [ 1, 3, 3, 1, 1, 1],{fret:1,from:0,to:5},'Em-shape barre at 7'),
+  ],
+  'Dm7': [
+    V('Open',    1, 1, [-1,-1, 0, 2, 1, 1], {fret:1,from:4,to:5}, 'Index mini-barre on B+e'),
+    V('Open 2',  1, 1, [-1,-1, 0, 2, 1, 0], null, 'No barre — Index on B only'),
+  ],
+  'Bm7': [
+    V('Barre 2fr',2,2,[-1,1,3,2,2,2],{fret:1,from:1,to:1},'Lighter than full Bm'),
+    V('Open',    2,1,[-1,2,0,2,0,2],null,'Open string voicing — no barre'),
+  ],
+  'Cm7': [V('Barre 3fr',2,3,[-1,1,3,1,2,1],{fret:1,from:1,to:5},'Am7-shape barre at 3')],
+  'F#m7':[V('Barre 2fr',2,2,[-1,1,3,1,2,2],{fret:1,from:1,to:1},'Am7-shape at 2')],
+  'Gm7': [V('Barre 3fr',2,3,[ 1,3,1,1,1,1],{fret:1,from:0,to:5},'E7-shape at 3')],
+
+  /* ── Dominant 9ths ── */
+  'G9':  [V('Open',2,1,[3,2,0,2,0,1],null,'Index on e, Ring on A, Pinky on G')],
+  'A9':  [V('Open',2,1,[-1,0,2,0,2,2],null,'Pinky on e, Index on B, Middle on D')],
+  'D9':  [V('Open',2,1,[-1,-1,0,2,1,0],null,'Middle=D fret2, Index=B fret1')],
+  'E9':  [V('Open',2,1,[0,2,0,1,0,2],null,'Index=G, Pinky=e fret2')],
+
+  /* ── Major 9ths ── */
+  'Cmaj9':[V('Open',1,1,[0,3,0,0,0,0],null,'Just ring on A — let everything ring')],
+  'Gmaj9':[V('Open',1,1,[3,2,0,2,0,0],null,'Like G but leave B+e open')],
+  'Amaj9':[V('Open',2,1,[-1,0,2,1,0,0],null,'Index on G — leave B+e open')],
+
+  /* ── sus2 (missing ones) ── */
+  'Csus2': [V('Open',1,1,[0,3,3,0,1,0],null,'Replace Index B with open D string')],
+  'Esus2': [V('Open',1,1,[0,2,2,4,0,0],null,'Pinky on G at 4 — big open sound')],
+  'Gsus2': [V('Open',1,1,[3,2,0,0,3,3],null,'Pinky+Ring on top strings')],
+
+  /* ── Half-diminished / diminished ── */
+  'Bdim': [V('Open',2,1,[-1,2,3,4,3,-1],null,'Stacked minor thirds')],
+  'Cdim': [V('Fret 3',2,3,[-1,3,4,2,1,-1],null,'Dim shape at 3')],
+  'Ddim': [V('Open',2,1,[-1,-1,0,1,0,1],null,'Index on A+e, Middle on G')],
+  'Edim': [V('Open',2,1,[0,1,2,3,2,-1],null,'Ascending dim shape')],
+  'Fdim': [V('Fret 1',2,1,[1,2,3,4,3,1],{fret:1,from:0,to:5},'Barre + dim cluster')],
+  'Gdim': [V('Fret 3',2,3,[3,4,2,1,3,-1],null,'Ring finger anchor on low E')],
+  'Adim': [V('Open',2,1,[-1,0,1,2,1,0],null,'Middle=D, Ring=G, Index=B')],
+
+  /* ── Augmented ── */
+  'Caug': [V('Open',2,1,[0,3,2,1,1,0],null,'Middle=D#, Index cluster on G+B')],
+  'Gaug': [V('Open',2,1,[3,2,1,0,0,3],null,'Index on D — symmetrical shape')],
+  'Aaug': [V('Open',2,1,[-1,0,3,2,2,1],null,'Index on e, Middle+Ring cluster')],
+  'Eaug': [V('Open',2,1,[0,3,2,1,1,0],null,'Same shape as Caug — different root')],
+
+  /* ── 6ths ── */
+  'A6':  [V('Open',1,1,[-1,0,2,2,2,2],null,'Add pinky on e — all on 2nd fret')],
+  'D6':  [V('Open',1,1,[-1,-1,0,2,0,2],null,'Index on e, open B — jangly sound')],
+  'E6':  [V('Open',1,1,[0,2,2,1,2,0],null,'Add Ring on B at fret 2')],
+  'G6':  [V('Open',1,1,[3,2,0,0,0,0],null,'Leave top 3 strings open — very easy')],
+
+  /* ── Minor 6ths ── */
+  'Am6': [V('Open',1,1,[-1,0,2,2,1,2],null,'Pinky on e — distinctive jazz flavour')],
+  'Em6': [V('Open',1,1,[0,2,2,0,2,0],null,'Add Ring on B at fret 2')],
 };
 
 /* ── SVG diagram renderer ──
