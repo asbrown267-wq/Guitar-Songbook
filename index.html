@@ -359,6 +359,52 @@ header p{color:var(--muted);font-size:.65rem;letter-spacing:1px;margin-top:1px}
 /* artist autocomplete */
 #artistList option{background:var(--surface);color:var(--text)}
 
+/* ── Draggable chord tokens ── */
+.chord-token{cursor:grab!important}
+.chord-token.dragging{opacity:.4;cursor:grabbing!important}
+.chord-drag-ghost{position:fixed;z-index:9200;pointer-events:none;
+  color:var(--chord);font-family:var(--mono);font-weight:600;
+  background:#131826;border:1px solid var(--chord);padding:1px 5px;
+  font-size:var(--editor-fs);border-radius:2px;box-shadow:0 4px 14px rgba(0,0,0,.6);
+  white-space:nowrap;transform:translate(-50%,-50%)}
+.ce-chord-row.drag-over{background:rgba(91,141,238,.08);outline:1px dashed rgba(91,141,238,.4)}
+
+/* ── Undo button ── */
+.tbtn-undo{border-color:var(--muted);color:var(--muted)}
+.tbtn-undo:hover,.tbtn-undo:active{border-color:var(--accent2);color:var(--accent2);background:rgba(138,180,248,.08)}
+.tbtn-undo:disabled{opacity:.25;cursor:default}
+
+/* ── Chord-line convert banner ── */
+.chord-line-banner{display:flex;align-items:center;gap:8px;padding:4px 10px;
+  background:rgba(224,123,84,.1);border:1px solid rgba(224,123,84,.3);
+  font-size:.65rem;color:var(--chord);letter-spacing:.3px;margin:2px 0;border-radius:2px}
+.chord-line-banner button{font-family:'Special Elite',cursive;font-size:.6rem;
+  padding:2px 8px;border:1px solid var(--chord);color:var(--chord);background:transparent;
+  cursor:pointer;transition:all .12s}
+.chord-line-banner button:hover{background:rgba(224,123,84,.15)}
+.chord-line-dismiss{margin-left:auto;opacity:.5;cursor:pointer;padding:0 4px}
+.chord-line-dismiss:hover{opacity:1}
+
+/* ── Lock screen ── */
+#lockScreen{display:none;position:fixed;inset:0;background:#080b12;z-index:99999;
+  flex-direction:column;align-items:center;justify-content:center;gap:18px}
+#lockScreen.show{display:flex}
+.lock-icon{font-size:48px;opacity:.4}
+.lock-title{font-family:'Playfair Display',serif;color:var(--accent2);font-size:1.4rem;letter-spacing:2px}
+.lock-sub{color:var(--muted);font-size:.75rem;letter-spacing:1px}
+.lock-input{font-family:'Special Elite',cursive;background:var(--surface);border:1px solid var(--border);
+  color:var(--text);padding:10px 18px;font-size:1rem;outline:none;width:240px;text-align:center;
+  letter-spacing:3px}
+.lock-input:focus{border-color:var(--accent)}
+.lock-btn{font-family:'Special Elite',cursive;background:var(--accent);border:none;color:#fff;
+  padding:9px 28px;font-size:.85rem;cursor:pointer;letter-spacing:1px;transition:all .15s}
+.lock-btn:hover{background:var(--accent2)}
+.lock-err{color:var(--danger);font-size:.72rem;min-height:16px;letter-spacing:.5px}
+.lock-set-wrap{font-size:.65rem;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:8px}
+.lock-set-wrap a{color:var(--accent);cursor:pointer;text-decoration:underline}
+.tbtn-lock{border-color:var(--muted);color:var(--muted);font-size:.6rem}
+.tbtn-lock:hover{border-color:var(--accent2);color:var(--accent2)}
+
 /* ── Mobile ── */
 @media(max-width:700px){
   :root{--sidebar-w:80vw}
@@ -449,6 +495,8 @@ header p{color:var(--muted);font-size:.65rem;letter-spacing:1px;margin-top:1px}
         <button class="tbtn tbtn-lyric"   onclick="addLyricLine()">♩ Lyric</button>
         <button class="tbtn tbtn-tab"     onclick="addTabBlock()">⌇ Tab</button>
         <div class="tsep"></div>
+        <button class="tbtn tbtn-undo" id="btnUndo" onclick="undoEdit()" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
+        <div class="tsep"></div>
         <div class="size-wrap" title="Editor text size">
           <span class="size-lbl">SIZE</span>
           <div class="size-track" id="sizeTrack" onmousedown="startSizeDrag(event)" ontouchstart="startSizeDrag(event)">
@@ -461,6 +509,7 @@ header p{color:var(--muted);font-size:.65rem;letter-spacing:1px;margin-top:1px}
           <button class="tbtn tbtn-mode" id="btnRaw" onclick="setMode('raw')">Raw</button>
           <button class="tbtn tbtn-diag" id="btnDiag" onclick="toggleDiagPanel()" title="Chord diagrams">⬡ Chords</button>
           <button class="tbtn tbtn-suggest" id="btnSuggest" onclick="toggleSuggestPanel()" title="Suggestions">💡 Ideas</button>
+          <button class="tbtn tbtn-lock" onclick="lockApp()" title="Lock songbook">🔒</button>
           <button class="tbtn tbtn-perform" onclick="enterPerform()">▶ Perform</button>
         </div>
       </div>
@@ -491,7 +540,7 @@ header p{color:var(--muted);font-size:.65rem;letter-spacing:1px;margin-top:1px}
       <div class="statusbar">
         <span id="saveStatus" class="status-saved">● Saved</span>
         <span id="sbInfo">0 blocks</span>
-        <span class="sb-hint">Click chord row to place · Click chord to edit · ← → to nudge · Tab/Shift-Tab between chords</span>
+        <span class="sb-hint">Click chord row to place · Drag chord to move · Enter=new line · Backspace=merge</span>
       </div>
     </div>
   </div>
@@ -551,6 +600,17 @@ header p{color:var(--muted);font-size:.65rem;letter-spacing:1px;margin-top:1px}
   </div>
 </div>
 
+<!-- Lock screen -->
+<div id="lockScreen">
+  <div class="lock-icon">🔒</div>
+  <div class="lock-title">Guitar Songbook</div>
+  <div class="lock-sub">Enter password to unlock</div>
+  <input class="lock-input" id="lockInput" type="password" placeholder="••••••" autocomplete="current-password">
+  <div class="lock-err" id="lockErr"></div>
+  <button class="lock-btn" onclick="tryUnlock()">Unlock</button>
+  <div class="lock-set-wrap">No password set? <a onclick="showSetPassword()">Set one now</a></div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════════
    DATA MODEL
@@ -568,6 +628,33 @@ let sortMode = 'recent';
 let charWidth = 9.608;
 let saveTimer = null;
 let isDirty = false;
+
+/* ── Undo stack ── */
+const UNDO_MAX = 50;
+let undoStack = []; // array of JSON snapshots of song.blocks
+
+function pushUndo() {
+  const song = getSong(); if (!song) return;
+  const snap = JSON.stringify(song.blocks);
+  // Don't push duplicate
+  if (undoStack.length && undoStack[undoStack.length-1] === snap) return;
+  undoStack.push(snap);
+  if (undoStack.length > UNDO_MAX) undoStack.shift();
+  document.getElementById('btnUndo').disabled = false;
+}
+
+function undoEdit() {
+  const song = getSong(); if (!song || !undoStack.length) return;
+  undoStack.pop(); // current state
+  if (!undoStack.length) {
+    document.getElementById('btnUndo').disabled = true;
+    return;
+  }
+  song.blocks = JSON.parse(undoStack[undoStack.length-1]);
+  if (undoStack.length <= 1) document.getElementById('btnUndo').disabled = true;
+  blockChanged(false); // false = don't push undo for the undo itself
+  renderChordEditor();
+}
 
 /* ── Transpose tables ── */
 const SHARP_SCALE = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
@@ -605,7 +692,7 @@ function transposeKeyName(key, steps) {
 
 function transpose(steps) {
   const song = getSong(); if (!song) return;
-  // Transpose all chords in all pair blocks
+  pushUndo();
   (song.blocks||[]).forEach(b => {
     if (b.type === 'pair' && b.chords) {
       b.chords.forEach(ch => { ch.name = transposeNoteName(ch.name, steps); });
@@ -681,6 +768,8 @@ function openSong(id) {
   document.getElementById('songArtist').value = song.artist || '';
   document.getElementById('songKey').value    = song.key    || '';
   setSaveStatus(true);
+  undoStack = [];
+  document.getElementById('btnUndo').disabled = true;
   renderList();
   if (editorMode==='raw') syncRawFromBlocks();
   else renderChordEditor();
@@ -791,79 +880,142 @@ function songItemHTML(s) {
 /* ═══════════════════════════
    BLOCK HELPERS
 ═══════════════════════════ */
-function blockChanged() {
+function blockChanged(doUndo=true) {
+  if (doUndo) pushUndo();
   updateSbInfo();
   schedSave();
 }
 
 function addSection() {
   const song=getSong(); if (!song) return;
+  pushUndo();
   song.blocks.push({type:'section',text:'Verse'});
-  blockChanged(); renderChordEditor();
+  blockChanged(false); renderChordEditor();
   setTimeout(()=>{ const els=document.querySelectorAll('.ce-section-text'); if(els.length) els[els.length-1].focus(); },30);
 }
 
 function addLyricLine(text) {
   const song=getSong(); if (!song) return;
+  pushUndo();
   song.blocks.push({type:'pair',lyric:text||'',chords:[]});
-  blockChanged(); renderChordEditor();
+  blockChanged(false); renderChordEditor();
   setTimeout(()=>{ const els=document.querySelectorAll('.ce-lyric'); if(els.length) els[els.length-1].focus(); },30);
 }
 
 function addTabBlock() {
   const song=getSong(); if (!song) return;
+  pushUndo();
   song.blocks.push({type:'tab',text:'e|--------|\nB|--------|\nG|--------|\nD|--------|\nA|--------|\nE|--------|'});
-  blockChanged(); renderChordEditor();
+  blockChanged(false); renderChordEditor();
 }
 
 function deleteBlock(idx) {
   const song=getSong(); if (!song) return;
+  pushUndo();
   song.blocks.splice(idx,1);
-  blockChanged(); renderChordEditor();
+  blockChanged(false); renderChordEditor();
 }
 
 /* ═══════════════════════════
    CHORD EDITOR
 ═══════════════════════════ */
+
+/* Smart chord-line detection — stricter than isChordLine to avoid false positives.
+   "A" alone at start of lyric sentence is NOT a chord. Needs 2+ chord tokens OR
+   a single token that's clearly a chord (has suffix like m, maj7, 7, etc.) */
+function isClearChordLine(line) {
+  if (!line || !line.trim()) return false;
+  const tokens = line.trim().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return false;
+  // Full chord pattern
+  const fullPat = /^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M)?\d*(?:\/[A-G][#b]?)?$/;
+  // Chord with suffix (definitely a chord, not word "A" or "E")
+  const suffixPat = /^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M)\d*(?:\/[A-G][#b]?)?$/;
+  // Numbered chord (A7, G7 etc — definitely chords)
+  const numPat = /^[A-G][#b]?\d/;
+  // Accidental chord (C#, Bb etc — definitely chords)
+  const accPat = /^[A-G][#b]/;
+
+  const chordTokens = tokens.filter(t =>
+    suffixPat.test(t) || numPat.test(t) || accPat.test(t) ||
+    // Multi-char plain note is chord: "C", "D", "G" etc but NOT single letter before a word
+    (fullPat.test(t) && (tokens.length > 1 || t.length > 1))
+  );
+
+  if (chordTokens.length === 0) return false;
+  // If more than half the tokens are chords, it's a chord line
+  if (chordTokens.length / tokens.length >= 0.6) return true;
+  // If ALL tokens are chords and there are at least 2, definitely chord line
+  if (chordTokens.length >= 2 && chordTokens.length === tokens.length) return true;
+  return false;
+}
+
 function renderChordEditor() {
   const song = getSong();
   const ce = document.getElementById('chordEditor');
   if (!song) { ce.innerHTML=''; return; }
   ce.innerHTML='';
+
   (song.blocks||[]).forEach((block,idx)=>{
+    /* ── SECTION ── */
     if (block.type==='section') {
       const row = el('div','ce-section'); row.dataset.idx=idx;
       const inp = el('input'); inp.type='text'; inp.className='ce-section-text';
       inp.value=block.text||''; inp.spellcheck=false;
       inp.style.width=Math.max(80,(block.text||'').length*10+24)+'px';
       inp.oninput=()=>{ block.text=inp.value; inp.style.width=Math.max(80,inp.value.length*10+24)+'px'; blockChanged(); };
+      inp.onkeydown=(e)=>sectionKeydown(e,idx);
       const del=delBtn(idx);
       row.appendChild(inp); row.appendChild(del); ce.appendChild(row);
 
+    /* ── TAB ── */
     } else if (block.type==='tab') {
       const wrap=el('div','ce-block'); wrap.dataset.idx=idx;
       const ta=el('textarea','ce-tab'); ta.value=block.text||''; ta.rows=(block.text||'').split('\n').length;
       ta.spellcheck=false;
       ta.oninput=()=>{ block.text=ta.value; ta.rows=ta.value.split('\n').length; blockChanged(); };
+      ta.onkeydown=(e)=>tabKeydown(e,idx);
       const del=delBtn(idx);
       wrap.appendChild(ta); wrap.appendChild(del); ce.appendChild(wrap);
 
+    /* ── PAIR (chord row + lyric) ── */
     } else if (block.type==='pair') {
       const wrap=el('div','ce-block ce-pair'); wrap.dataset.idx=idx;
 
-      // Chord row — height scales with font size
+      // Check if lyric looks like a chord line that should be converted
+      const lyricVal = block.lyric||'';
+      if (isClearChordLine(lyricVal) && !block.chords?.length) {
+        const banner = el('div','chord-line-banner');
+        banner.innerHTML=`<span>⚑ Looks like a chord line</span>`;
+        const cvtBtn = el('button'); cvtBtn.textContent='Convert to chords';
+        cvtBtn.onclick=(e)=>{ e.stopPropagation(); convertLyricToChords(idx); };
+        const dismiss = el('span','chord-line-dismiss'); dismiss.textContent='✕'; dismiss.title='Dismiss';
+        dismiss.onclick=(e)=>{ e.stopPropagation(); block._dismissChordHint=true; blockChanged(); renderChordEditor(); };
+        banner.appendChild(cvtBtn); banner.appendChild(dismiss);
+        if (!block._dismissChordHint) wrap.appendChild(banner);
+      }
+
+      // Chord row
       const crH = Math.round(editorFontSize * 1.5);
       const cr=el('div','ce-chord-row'); cr.dataset.idx=idx;
       cr.style.height = crH + 'px';
       cr.style.lineHeight = crH + 'px';
+
+      // Drop zone for chord drag
+      cr.addEventListener('dragover', e=>{ e.preventDefault(); cr.classList.add('drag-over'); });
+      cr.addEventListener('dragleave', ()=>cr.classList.remove('drag-over'));
+      cr.addEventListener('drop', e=>chordDropOnRow(e, idx));
+
       const drop=el('div'); drop.style.cssText='position:absolute;inset:0;cursor:crosshair';
       drop.onclick=(e)=>openChordInput(idx,e,null);
       cr.appendChild(drop);
+
       (block.chords||[]).forEach((ch,ci)=>{
         const tok=el('span','chord-token');
         tok.textContent=ch.name; tok.style.left=(ch.pos*charWidth)+'px';
         tok.style.lineHeight = crH + 'px';
         tok.dataset.idx=idx; tok.dataset.ci=ci; tok.tabIndex=0;
+        tok.draggable=true;
         tok.onclick=(e)=>{ e.stopPropagation(); openChordInput(idx,e,ci); };
         tok.onmouseenter=()=>highlightDiag(ch.name, true, tok);
         tok.onmouseleave=()=>highlightDiag(ch.name, false, null);
@@ -872,33 +1024,18 @@ function renderChordEditor() {
           if (e.key==='ArrowRight'){ e.preventDefault(); nudgeChord(idx,ci,+1); }
           if (e.key==='Delete'||e.key==='Backspace'){ e.preventDefault(); removeChord(idx,ci); }
         };
+        // Drag events
+        tok.addEventListener('dragstart', e=>chordDragStart(e, idx, ci));
+        tok.addEventListener('dragend',   e=>chordDragEnd(e));
         cr.appendChild(tok);
       });
 
-      // Lyric input
+      // Lyric input — word-processor style
       const lyr=el('textarea','ce-lyric'); lyr.rows=1;
-      lyr.value=block.lyric||''; lyr.spellcheck=false;
+      lyr.value=lyricVal; lyr.spellcheck=true;
       lyr.autocomplete='off'; lyr.setAttribute('autocorrect','off');
       lyr.oninput=()=>{ block.lyric=lyr.value; autoH(lyr); blockChanged(); };
-      lyr.onkeydown=(e)=>{
-        if (e.key==='Enter'&&!e.shiftKey) {
-          e.preventDefault();
-          const song=getSong(); if(!song) return;
-          const cp=lyr.selectionStart;
-          const before=lyr.value.slice(0,cp), after=lyr.value.slice(cp);
-          block.lyric=before; lyr.value=before; autoH(lyr);
-          song.blocks.splice(idx+1,0,{type:'pair',lyric:after,chords:[]});
-          blockChanged(); renderChordEditor();
-          setTimeout(()=>{ const ps=document.querySelectorAll('.ce-lyric'); if(ps[idx+1]){ps[idx+1].focus();ps[idx+1].setSelectionRange(0,0);} },20);
-        }
-        if (e.key==='Backspace'&&lyr.value===''&&lyr.selectionStart===0) {
-          e.preventDefault();
-          const song=getSong(); if(!song||idx===0) return;
-          song.blocks.splice(idx,1);
-          blockChanged(); renderChordEditor();
-          setTimeout(()=>{ const ps=document.querySelectorAll('.ce-lyric'); if(ps[idx-1]){ps[idx-1].focus();ps[idx-1].setSelectionRange(ps[idx-1].value.length,ps[idx-1].value.length);} },20);
-        }
-      };
+      lyr.onkeydown=(e)=>lyricKeydown(e,idx,block,lyr);
 
       const del=delBtn(idx);
       wrap.appendChild(cr); wrap.appendChild(lyr); wrap.appendChild(del);
@@ -906,10 +1043,143 @@ function renderChordEditor() {
       requestAnimationFrame(()=>autoH(lyr));
     }
   });
-  // Refresh diagram panel with chords from this song
+
   refreshDiagPanel();
 }
 
+/* ── Convert a lyric line that looks like chords into actual chords ── */
+function convertLyricToChords(idx) {
+  const song=getSong(); if(!song) return;
+  const block=song.blocks[idx]; if(!block||block.type!=='pair') return;
+  pushUndo();
+  // Extract chords from the lyric text
+  const extracted = extractChords(block.lyric||'');
+  block.chords = extracted;
+  block.lyric = '';
+  blockChanged(false);
+  renderChordEditor();
+}
+
+/* ── Word-processor keyboard handling for lyric textarea ── */
+function lyricKeydown(e, idx, block, lyr) {
+  const song=getSong(); if(!song) return;
+
+  // Enter = split line / insert new line below
+  if (e.key==='Enter' && !e.shiftKey) {
+    e.preventDefault();
+    pushUndo();
+    const cp=lyr.selectionStart;
+    const before=lyr.value.slice(0,cp), after=lyr.value.slice(cp);
+    block.lyric=before; lyr.value=before; autoH(lyr);
+    // New blank pair after, carrying text after cursor
+    song.blocks.splice(idx+1,0,{type:'pair',lyric:after,chords:[]});
+    blockChanged(false); renderChordEditor();
+    setTimeout(()=>{
+      const ps=document.querySelectorAll('.ce-lyric');
+      if(ps[idx+1]){ps[idx+1].focus();ps[idx+1].setSelectionRange(0,0);}
+    },20);
+    return;
+  }
+
+  // Backspace at start of line = merge with previous block
+  if (e.key==='Backspace' && lyr.selectionStart===0 && lyr.selectionEnd===0) {
+    e.preventDefault();
+    if (idx===0) return;
+    const prevBlock = song.blocks[idx-1];
+    pushUndo();
+    if (prevBlock.type==='pair') {
+      // Merge lyrics
+      const prevLen = (prevBlock.lyric||'').length;
+      prevBlock.lyric = (prevBlock.lyric||'') + (block.lyric||'');
+      // Merge chords — shift current block's chords by prevLen/charWidth cols
+      const offset = Math.ceil(prevLen / 1); // col offset = char count
+      if (block.chords?.length) {
+        block.chords.forEach(ch=>{ prevBlock.chords.push({...ch, pos: ch.pos + offset}); });
+        prevBlock.chords.sort((a,b)=>a.pos-b.pos);
+      }
+      song.blocks.splice(idx,1);
+      blockChanged(false); renderChordEditor();
+      setTimeout(()=>{
+        const ps=document.querySelectorAll('.ce-lyric');
+        if(ps[idx-1]){ps[idx-1].focus();ps[idx-1].setSelectionRange(prevLen,prevLen);}
+      },20);
+    } else {
+      // Previous block is section/tab — just delete current empty line
+      if (!block.lyric) {
+        song.blocks.splice(idx,1);
+        blockChanged(false); renderChordEditor();
+      }
+    }
+    return;
+  }
+
+  // Delete at end of line = pull next line up
+  if (e.key==='Delete' && lyr.selectionStart===lyr.value.length && lyr.selectionEnd===lyr.value.length) {
+    const nextBlock = song.blocks[idx+1];
+    if (nextBlock?.type==='pair') {
+      e.preventDefault();
+      pushUndo();
+      const curLen = (block.lyric||'').length;
+      block.lyric = (block.lyric||'') + (nextBlock.lyric||'');
+      song.blocks.splice(idx+1,1);
+      blockChanged(false); renderChordEditor();
+      setTimeout(()=>{
+        const ps=document.querySelectorAll('.ce-lyric');
+        if(ps[idx]){ps[idx].focus();ps[idx].setSelectionRange(curLen,curLen);}
+      },20);
+      return;
+    }
+  }
+
+  // Arrow up/down = move between lyric lines
+  if (e.key==='ArrowUp') {
+    const lyricals = document.querySelectorAll('.ce-lyric');
+    const myIdx = [...lyricals].indexOf(lyr);
+    if (myIdx > 0) { e.preventDefault(); lyricals[myIdx-1].focus(); }
+    return;
+  }
+  if (e.key==='ArrowDown') {
+    const lyricals = document.querySelectorAll('.ce-lyric');
+    const myIdx = [...lyricals].indexOf(lyr);
+    if (myIdx < lyricals.length-1) { e.preventDefault(); lyricals[myIdx+1].focus(); }
+    return;
+  }
+}
+
+/* ── Section keyboard handling ── */
+function sectionKeydown(e, idx) {
+  const song=getSong(); if(!song) return;
+  if (e.key==='Enter') {
+    e.preventDefault();
+    pushUndo();
+    song.blocks.splice(idx+1,0,{type:'pair',lyric:'',chords:[]});
+    blockChanged(false); renderChordEditor();
+    setTimeout(()=>{ const ps=document.querySelectorAll('.ce-lyric'); if(ps[idx]) ps[idx].focus(); },20);
+  }
+  if (e.key==='Backspace') {
+    const inp=e.target;
+    if (!inp.value) {
+      e.preventDefault();
+      pushUndo();
+      song.blocks.splice(idx,1);
+      blockChanged(false); renderChordEditor();
+    }
+  }
+}
+
+/* ── Tab keyboard handling ── */
+function tabKeydown(e, idx) {
+  const song=getSong(); if(!song) return;
+  if (e.key==='Backspace') {
+    const ta=e.target;
+    if (!ta.value && ta.selectionStart===0) {
+      e.preventDefault();
+      pushUndo();
+      song.blocks.splice(idx,1);
+      blockChanged(false); renderChordEditor();
+    }
+  }
+}
 function el(tag,cls) { const e=document.createElement(tag); if(cls) e.className=cls; return e; }
 function autoH(ta) { ta.style.height='0'; ta.style.height=ta.scrollHeight+'px'; }
 function delBtn(idx) {
@@ -948,6 +1218,7 @@ function closeChordInput(save) {
     const {blockIdx,chordIdx,pos}=activeCT;
     const song=getSong(); if(!song) return;
     const block=song.blocks[blockIdx]; if(!block||block.type!=='pair') return;
+    pushUndo();
     if (val==='') {
       if (chordIdx!==null) block.chords.splice(chordIdx,1);
     } else if (chordIdx!==null) {
@@ -957,7 +1228,7 @@ function closeChordInput(save) {
       if (ex>=0) block.chords[ex].name=val;
       else { block.chords.push({pos,name:val}); block.chords.sort((a,b)=>a.pos-b.pos); }
     }
-    blockChanged(); renderChordEditor();
+    blockChanged(false); renderChordEditor();
   }
   activeCT=null;
 }
@@ -969,7 +1240,7 @@ document.getElementById('chordInput').addEventListener('keydown',e=>{
     if (activeCT?.chordIdx!==null&&activeCT?.chordIdx!==undefined) {
       const {blockIdx,chordIdx}=activeCT;
       const song=getSong(); const block=song?.blocks[blockIdx];
-      if (block){ block.chords.splice(chordIdx,1); blockChanged(); renderChordEditor(); }
+      if (block){ pushUndo(); block.chords.splice(chordIdx,1); blockChanged(false); renderChordEditor(); }
     }
     closeChordInput(false);
   }
@@ -983,16 +1254,79 @@ function nudgeChord(blockIdx,chordIdx,delta) {
   const song=getSong(); if(!song) return;
   const block=song.blocks[blockIdx]; if(!block) return;
   const ch=block.chords[chordIdx]; if(!ch) return;
+  pushUndo();
   ch.pos=Math.max(0,ch.pos+delta);
-  blockChanged(); renderChordEditor();
+  blockChanged(false); renderChordEditor();
   setTimeout(()=>{ const toks=document.querySelectorAll(`.chord-token[data-idx="${blockIdx}"][data-ci="${chordIdx}"]`); if(toks[0]) toks[0].focus(); },20);
 }
 function removeChord(blockIdx,chordIdx) {
   const song=getSong(); if(!song) return;
   const block=song.blocks[blockIdx]; if(!block) return;
+  pushUndo();
   block.chords.splice(chordIdx,1);
-  blockChanged(); renderChordEditor();
+  blockChanged(false); renderChordEditor();
 }
+
+/* ── Chord drag and drop ── */
+let dragState = null; // { blockIdx, chordIdx, name }
+let dragGhost = null;
+
+function chordDragStart(e, blockIdx, chordIdx) {
+  const song=getSong(); if(!song) return;
+  const block=song.blocks[blockIdx]; if(!block) return;
+  const ch=block.chords[chordIdx]; if(!ch) return;
+  dragState = { blockIdx, chordIdx, name: ch.name };
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', ch.name);
+
+  // Custom ghost
+  dragGhost = document.createElement('div');
+  dragGhost.className = 'chord-drag-ghost';
+  dragGhost.textContent = ch.name;
+  document.body.appendChild(dragGhost);
+  e.dataTransfer.setDragImage(dragGhost, -999, -999); // hide default ghost
+}
+
+function chordDragEnd(e) {
+  e.target.classList.remove('dragging');
+  if (dragGhost) { dragGhost.remove(); dragGhost=null; }
+  document.querySelectorAll('.ce-chord-row').forEach(r=>r.classList.remove('drag-over'));
+}
+
+function chordDropOnRow(e, targetBlockIdx) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragState) return;
+  const song=getSong(); if(!song) return;
+
+  const targetBlock=song.blocks[targetBlockIdx]; if(!targetBlock||targetBlock.type!=='pair') return;
+  const cr=e.currentTarget;
+  const rect=cr.getBoundingClientRect();
+  const newPos=Math.max(0,Math.round((e.clientX-rect.left)/charWidth));
+
+  pushUndo();
+
+  // Remove from source
+  const srcBlock=song.blocks[dragState.blockIdx];
+  if (srcBlock) srcBlock.chords.splice(dragState.chordIdx,1);
+
+  // Add to target at new position
+  const existing=targetBlock.chords.findIndex(c=>c.pos===newPos);
+  if (existing>=0) targetBlock.chords[existing].name=dragState.name;
+  else { targetBlock.chords.push({pos:newPos,name:dragState.name}); targetBlock.chords.sort((a,b)=>a.pos-b.pos); }
+
+  dragState=null;
+  blockChanged(false); renderChordEditor();
+}
+
+// Track ghost position
+document.addEventListener('dragover', e=>{
+  if (dragGhost) {
+    dragGhost.style.left = e.clientX+'px';
+    dragGhost.style.top  = e.clientY+'px';
+  }
+});
 
 /* ═══════════════════════════
    RAW MODE
@@ -1214,6 +1548,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();newSong();}
   if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();if(currentId)enterPerform();}
   if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();forceSave();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();undoEdit();}
 });
 
 /* ═══════════════════════════
@@ -2000,6 +2335,71 @@ function renderSuggestPanel() {
   ].forEach(([name, desc]) => chip(`<strong>${name}</strong>`, desc, null));
 }
 
+
+/* ═══════════════════════════
+   PASSWORD LOCK
+═══════════════════════════ */
+const PASS_KEY = 'gsb_pass';
+
+function hashPass(p) {
+  // Simple deterministic hash — not cryptographic but fine for local use
+  let h = 0;
+  for (let i=0; i<p.length; i++) { h = ((h<<5)-h)+p.charCodeAt(i); h|=0; }
+  return h.toString(16);
+}
+
+function lockApp() {
+  const stored = localStorage.getItem(PASS_KEY);
+  if (!stored) {
+    // No password set — prompt to set one
+    showSetPassword();
+    return;
+  }
+  document.getElementById('lockInput').value='';
+  document.getElementById('lockErr').textContent='';
+  document.getElementById('lockScreen').classList.add('show');
+  setTimeout(()=>document.getElementById('lockInput').focus(),100);
+}
+
+function tryUnlock() {
+  const val = document.getElementById('lockInput').value;
+  const stored = localStorage.getItem(PASS_KEY);
+  if (!stored) { document.getElementById('lockScreen').classList.remove('show'); return; }
+  if (hashPass(val) === stored) {
+    document.getElementById('lockScreen').classList.remove('show');
+    document.getElementById('lockErr').textContent='';
+  } else {
+    document.getElementById('lockErr').textContent='Incorrect password';
+    document.getElementById('lockInput').value='';
+    document.getElementById('lockInput').focus();
+  }
+}
+
+function showSetPassword() {
+  const np = prompt('Set a password for your songbook (leave blank to remove password):');
+  if (np === null) return; // cancelled
+  if (!np.trim()) {
+    localStorage.removeItem(PASS_KEY);
+    alert('Password removed.');
+  } else {
+    localStorage.setItem(PASS_KEY, hashPass(np.trim()));
+    alert('Password set! Use the 🔒 button to lock.');
+  }
+}
+
+document.getElementById('lockInput').addEventListener('keydown', e=>{
+  if (e.key==='Enter') tryUnlock();
+});
+
+// Auto-lock on startup if password is set
+(function checkAutoLock() {
+  if (localStorage.getItem(PASS_KEY)) {
+    document.getElementById('lockInput').value='';
+    document.getElementById('lockErr').textContent='';
+    document.getElementById('lockScreen').classList.add('show');
+    setTimeout(()=>document.getElementById('lockInput').focus(),200);
+  }
+})();
 
 function measureCharWidth(px) {
   const r=document.createElement('span');
