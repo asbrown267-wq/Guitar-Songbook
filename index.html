@@ -456,6 +456,11 @@ header p{color:var(--muted);font-size:.65rem;letter-spacing:1px;margin-top:1px}
     <div class="sidebar-top">
       <button class="btn btn-primary" onclick="newSong()">+ New Song</button>
     </div>
+    <div style="padding:7px 10px;border-bottom:1px solid var(--border);display:flex;gap:5px">
+      <button class="btn" style="flex:1;font-size:.62rem" onclick="exportSongs()" title="Save all songs to a file on your computer">⬇ Export</button>
+      <button class="btn" style="flex:1;font-size:.62rem" onclick="importSongs()" title="Load songs from a previously exported file">⬆ Import</button>
+    </div>
+    <input type="file" id="importFileIn" accept=".json" style="display:none" onchange="importFileChosen(event)">
     <div class="sidebar-search">
       <div class="search-row">
         <input class="search-in" id="searchIn" placeholder="Search title or artist…" oninput="renderList()">
@@ -792,8 +797,62 @@ function deleteSong(id, e) {
 }
 
 /* ═══════════════════════════
-   SIDEBAR / SORT / SEARCH
+   EXPORT / IMPORT
 ═══════════════════════════ */
+function exportSongs() {
+  if (!songs.length) { alert('No songs to export yet.'); return; }
+  const data = JSON.stringify({ gsb_version: 1, exported: new Date().toISOString(), songs }, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = `guitar-songbook-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importSongs() {
+  document.getElementById('importFileIn').value = '';
+  document.getElementById('importFileIn').click();
+}
+
+function importFileChosen(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      const incoming = parsed.songs || parsed; // support both wrapped and raw array
+      if (!Array.isArray(incoming)) throw new Error('Not a valid songbook file');
+      const choice = confirm(
+        `Import ${incoming.length} song(s)?\n\n` +
+        `MERGE — adds imported songs alongside your existing songs\n` +
+        `(click OK to merge, Cancel to replace everything)`
+      );
+      if (choice) {
+        // Merge — avoid duplicates by id
+        const existingIds = new Set(songs.map(s=>s.id));
+        let added = 0;
+        incoming.forEach(s => {
+          if (!existingIds.has(s.id)) { songs.push(s); added++; }
+        });
+        alert(`Added ${added} new song(s). ${incoming.length - added} already existed.`);
+      } else {
+        if (!confirm('This will REPLACE all your current songs. Are you sure?')) return;
+        songs = incoming;
+        currentId = null;
+        document.getElementById('emptyState').style.display = 'flex';
+        document.getElementById('editorSection').style.display = 'none';
+      }
+      localStorage.setItem(STORE_KEY, JSON.stringify(songs));
+      renderList();
+      updateArtistSuggestions();
+    } catch(err) {
+      alert('Could not read file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
 function toggleSidebar() {
   const s = document.getElementById('sidebar');
   const b = document.getElementById('backdrop');
