@@ -306,6 +306,7 @@ header p{
   color:var(--accent2);
   padding:2px 6px;
   width:200px;outline:none;min-width:100px;
+  text-transform:uppercase;
 }
 .song-title-in:focus{border-bottom-color:var(--accent);color:var(--accent)}
 .song-title-in::placeholder{color:var(--faint)}
@@ -505,6 +506,15 @@ header p{
   cursor:crosshair;user-select:none;min-width:100%;
 }
 .ce-chord-row:hover{background:rgba(232,51,74,.04)}
+/* Show a subtle hint on empty chord rows */
+.ce-chord-row.empty-row::after{
+  content:'+ chord';
+  position:absolute;left:4px;top:50%;transform:translateY(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:rgba(232,51,74,.25);letter-spacing:1px;
+  pointer-events:none;font-style:italic;
+}
+.ce-chord-row.empty-row:hover::after{color:rgba(232,51,74,.5)}
 .ce-chord-row.drag-over{
   background:rgba(245,166,35,.06);
   outline:1px dashed rgba(245,166,35,.3);
@@ -1090,6 +1100,126 @@ header p{
   .song-artist-in{width:90px}
   .perf-ctrls{gap:3px}
 }
+
+/* ── Raw toolbar ── */
+#rawToolbar{
+  display:none;padding:5px 14px;background:var(--surface2);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  align-items:center;gap:5px;flex-wrap:wrap;
+}
+#rawToolbar.show{display:flex}
+.rtbtn{
+  font-family:var(--ui);font-weight:600;font-size:.63rem;
+  padding:3px 10px;border:1px solid var(--border2);
+  color:var(--text2);background:transparent;cursor:pointer;
+  transition:all .13s;letter-spacing:1px;text-transform:uppercase;
+  border-radius:var(--radius);
+}
+.rtbtn:disabled{opacity:.22;cursor:default;pointer-events:none}
+.rtbtn-undo{color:var(--muted)}
+.rtbtn-undo:not(:disabled):hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+.rtbtn-redo{color:var(--muted)}
+.rtbtn-redo:not(:disabled):hover{border-color:var(--tab);color:var(--tab);background:var(--tab-glow)}
+.rtbtn-convert{border-color:rgba(232,51,74,.4);color:var(--chord2)}
+.rtbtn-convert:hover{background:var(--chord-glow);border-color:var(--chord)}
+.rtbtn-clear{border-color:rgba(255,68,102,.3);color:var(--muted)}
+.rtbtn-clear:hover{border-color:var(--danger);color:var(--danger)}
+.raw-hint{font-family:var(--ui);font-size:.6rem;color:var(--muted);
+  letter-spacing:.5px;margin-left:auto;font-style:italic}
+
+/* Redo button in main toolbar */
+.tbtn-redo{border-color:var(--border2);color:var(--muted)}
+.tbtn-redo:hover,.tbtn-redo:active{border-color:var(--tab);color:var(--tab);background:var(--tab-glow)}
+.tbtn-redo:disabled{opacity:.2;cursor:default}
+
+/* song title always uppercase */
+.song-title-in{text-transform:uppercase}
+
+/* N.C. / non-chord text inline on chord row */
+.nc-tag{
+  position:absolute;top:0;
+  font-family:'JetBrains Mono',monospace;
+  font-size:calc(var(--editor-fs) - 2px);
+  color:var(--muted);font-style:italic;
+  line-height:22px;letter-spacing:.3px;
+  border-bottom:1px dashed rgba(255,255,255,.12);
+}
+.pnc{/* perform mode NC tag */
+  color:#505060;font-style:italic;font-size:.9em;
+}
+
+/* ── Help modal ── */
+#helpOverlay{
+  display:none;position:fixed;inset:0;z-index:9600;
+  background:rgba(0,0,0,.88);
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(3px);
+}
+#helpOverlay.show{display:flex}
+.help-modal{
+  background:var(--surface);border:1px solid var(--border2);
+  max-width:580px;width:92%;max-height:88vh;overflow-y:auto;
+  border-radius:4px;box-shadow:0 24px 64px rgba(0,0,0,.9);
+}
+.help-modal::before{
+  content:'';display:block;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--chord),var(--purple));
+  border-radius:4px 4px 0 0;
+}
+.help-header{
+  padding:18px 22px 12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.help-header h2{font-family:var(--display);color:var(--accent);font-size:1.5rem;letter-spacing:3px}
+.help-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px 8px;transition:color .13s}
+.help-close:hover{color:var(--danger)}
+.help-body{padding:18px 22px 4px;display:flex;flex-direction:column;gap:18px}
+.help-step{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:12px 14px;background:var(--surface2);
+  border:1px solid var(--border);border-radius:var(--radius);
+}
+.help-step-num{
+  font-family:var(--display);font-size:1.3rem;color:var(--accent);
+  letter-spacing:2px;min-width:28px;line-height:1.2;
+  text-shadow:var(--glow-accent);
+}
+.help-step-body h3{
+  font-family:var(--ui);font-weight:700;font-size:.78rem;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--text);
+  margin-bottom:4px;
+}
+.help-step-body p,.help-step-body li{
+  font-family:var(--body-font);font-size:.82rem;
+  color:var(--text2);line-height:1.55;
+}
+.help-step-body ul{padding-left:14px;display:flex;flex-direction:column;gap:2px}
+.help-step-body code{
+  font-family:'JetBrains Mono',monospace;font-size:.76rem;
+  color:var(--chord2);background:var(--surface3);
+  padding:1px 5px;border-radius:2px;
+}
+.help-ex{
+  margin-top:8px;background:var(--surface3);border:1px solid var(--border);
+  padding:8px 12px;border-radius:var(--radius);
+  font-family:'JetBrains Mono',monospace;font-size:.8rem;
+  line-height:1.9;
+}
+.help-ex .hc{color:var(--chord2);font-weight:600}
+.help-ex .hl{color:var(--text)}
+.help-ex .hm{color:var(--muted)}
+.help-footer{
+  padding:14px 22px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+}
+.help-footer-hint{font-family:var(--ui);font-size:.62rem;color:var(--muted);letter-spacing:.5px}
+.help-btn{
+  font-family:var(--ui);font-weight:700;background:var(--accent);border:none;color:#000;
+  padding:9px 26px;font-size:.82rem;cursor:pointer;letter-spacing:2px;text-transform:uppercase;
+  border-radius:var(--radius);box-shadow:var(--glow-accent);
+}
+.help-btn:hover{background:var(--accent2)}
+
 </style>
 </head>
 <body>
@@ -1153,6 +1283,7 @@ header p{
         <button class="tbtn tbtn-tab"     onclick="addTabBlock()">⌇ Tab</button>
         <div class="tsep"></div>
         <button class="tbtn tbtn-undo" id="btnUndo" onclick="undoEdit()" title="Undo (Ctrl+Z)" disabled>↩ Undo</button>
+        <button class="tbtn tbtn-redo" id="btnRedo" onclick="redoEdit()" title="Redo (Ctrl+Y)" disabled>↪ Redo</button>
         <div class="tsep"></div>
         <div class="size-wrap" title="Editor text size">
           <span class="size-lbl">SIZE</span>
@@ -1167,13 +1298,31 @@ header p{
           <button class="tbtn tbtn-diag" id="btnDiag" onclick="toggleDiagPanel()" title="Chord diagrams">⬡ Chords</button>
           <button class="tbtn tbtn-suggest" id="btnSuggest" onclick="toggleSuggestPanel()" title="Suggestions">💡 Ideas</button>
           <button class="tbtn tbtn-lock" onclick="lockApp()" title="Lock songbook">🔒</button>
+          <button class="tbtn" style="border-color:rgba(245,166,35,.4);color:var(--accent2)" onclick="showHelp()" title="How to use">? Help</button>
           <button class="tbtn tbtn-perform" onclick="enterPerform()">▶ Perform</button>
         </div>
       </div>
 
       <div class="editor-wrap">
         <div class="chord-editor" id="chordEditor"></div>
-        <textarea id="rawEditor" placeholder="Raw mode — paste lyrics &amp; chords here, then switch to Edit to add/move chords." oninput="rawEdited()"></textarea>
+        <div id="rawToolbar">
+          <button class="rtbtn rtbtn-undo" id="rawBtnUndo" onclick="rawUndo()" disabled>↩ Undo</button>
+          <button class="rtbtn rtbtn-redo" id="rawBtnRedo" onclick="rawRedo()" disabled>↪ Redo</button>
+          <span style="width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0"></span>
+          <button class="rtbtn rtbtn-convert" onclick="rawConvertLine()" title="Convert selected line — extracts real chords, keeps N.C. and other text">⚡ Convert Line to Chords</button>
+          <span style="width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0"></span>
+          <button class="rtbtn rtbtn-clear" onclick="rawClearLine()" title="Clear current line">✕ Clear Line</button>
+          <span class="raw-hint">Ctrl+Z / Ctrl+Y to undo/redo · Format: chord line above lyric line</span>
+        </div>
+        <textarea id="rawEditor" placeholder="Paste or type lyrics here.
+
+Chord lines go ABOVE the lyric line they belong to:
+
+Am       G        F
+There is a house in New Orleans
+
+[Verse], [Chorus] etc. mark sections.
+Switch to Edit mode to fine-tune chord positions." oninput="rawEdited()"></textarea>
         <!-- Chord diagram panel -->
         <div id="chordPanel">
           <div class="cpanel-hdr">
@@ -1197,7 +1346,7 @@ header p{
       <div class="statusbar">
         <span id="saveStatus" class="status-saved">● Saved</span>
         <span id="sbInfo">0 blocks</span>
-        <span class="sb-hint">Click chord row to place · Drag chord to move · Enter=new line · Backspace=merge</span>
+        <span class="sb-hint" id="sbHint" style="cursor:pointer" onclick="showHelp()" title="Click for help">💡 Click the red chord row to place a chord · hover a chord to edit · ? Help for guide</span>
       </div>
     </div>
   </div>
@@ -1206,7 +1355,7 @@ header p{
 <!-- Chord input overlay -->
 <div id="chordOverlay">
   <input type="text" id="chordInput" placeholder="Am…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <div class="ov-hint">Enter · save &nbsp; Esc · cancel &nbsp; Delete (empty) · remove</div>
+  <div class="ov-hint">Type chord name · <strong>Enter</strong> save · <strong>Esc</strong> cancel · <strong>Delete</strong> (when empty) remove · <strong>← →</strong> nudge</div>
 </div>
 
 <!-- Perform overlay -->
@@ -1276,6 +1425,81 @@ header p{
   <div class="lock-set-wrap">No password set? <a onclick="showSetPassword()">Set one now</a></div>
 </div>
 
+
+<!-- Help / onboarding overlay -->
+<div id="helpOverlay">
+  <div class="help-modal">
+    <div class="help-header">
+      <h2>HOW TO USE</h2>
+      <button class="help-close" onclick="closeHelp()">✕</button>
+    </div>
+    <div class="help-body">
+
+      <div class="help-step">
+        <div class="help-step-num">1</div>
+        <div class="help-step-body">
+          <h3>Add your song structure</h3>
+          <p>Click <strong>§ Section</strong> to add labels like Verse, Chorus, Bridge. Click <strong>♩ Lyric</strong> to add a lyric line. Click <strong>⌇ Tab</strong> for guitar tab notation.</p>
+        </div>
+      </div>
+
+      <div class="help-step">
+        <div class="help-step-num">2</div>
+        <div class="help-step-body">
+          <h3>Adding chords above lyrics</h3>
+          <p>Each lyric line has a <em>red chord row</em> above it. <strong>Click anywhere on that red row</strong> to place a chord at that position. Type the chord name and press Enter.</p>
+          <div class="help-ex">
+            <div><span class="hc">Am</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hc">G</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hc">F</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hm">← click this row to add chords</span></div>
+            <div><span class="hl">There is a house in New Orleans</span></div>
+          </div>
+          <ul style="margin-top:6px">
+            <li><strong>Hover</strong> a chord → click to edit or press ← → to nudge position</li>
+            <li><strong>Drag</strong> a chord to move it to a different position or line</li>
+            <li><strong>Double-click</strong> a chord to delete it (or click then press Delete)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="help-step">
+        <div class="help-step-num">3</div>
+        <div class="help-step-body">
+          <h3>Raw mode — paste &amp; import</h3>
+          <p>Switch to <strong>Raw</strong> mode to paste lyrics from the internet. Chord lines (lines where most words are chord names) are auto-detected and placed above the lyric below them.</p>
+          <div class="help-ex">
+            <div><span class="hc">Am       G        F</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hm">← chord line (auto-detected)</span></div>
+            <div><span class="hl">There is a house in New Orleans</span>&nbsp;<span class="hm">← lyric</span></div>
+          </div>
+          <p style="margin-top:6px">If a line has <em>mixed content</em> like <code>Am&nbsp;&nbsp;&nbsp;&nbsp;N.C.</code>, use the <strong>⚡ Convert Line</strong> button — it extracts real chords and keeps unrecognised text (N.C., //, %) as plain annotations.</p>
+        </div>
+      </div>
+
+      <div class="help-step">
+        <div class="help-step-num">4</div>
+        <div class="help-step-body">
+          <h3>Undo / Redo everywhere</h3>
+          <ul>
+            <li>In <strong>Edit mode</strong>: <code>Ctrl+Z</code> / <code>Ctrl+Y</code>, or use the ↩ Undo / ↪ Redo toolbar buttons</li>
+            <li>In <strong>Raw mode</strong>: the <strong>↩ Undo</strong> / <strong>↪ Redo</strong> buttons above the text area track every change you make while in raw mode</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="help-step">
+        <div class="help-step-num">5</div>
+        <div class="help-step-body">
+          <h3>Perform mode</h3>
+          <p>Press <strong>▶ Perform</strong> (or <code>Ctrl+Enter</code>) to enter full-screen mode. The smart scroll reads your content — it slows down for chord changes and solos, speeds up for dense lyrics. Press <strong>Space</strong> to start/stop. Tap <strong>T</strong> to the beat to set speed.</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="help-footer">
+      <span class="help-footer-hint">Press ? or click Help anytime to reopen this guide</span>
+      <button class="help-btn" onclick="closeHelp()">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════════
    DATA MODEL
@@ -1294,18 +1518,20 @@ let charWidth = 9.608;
 let saveTimer = null;
 let isDirty = false;
 
-/* ── Undo stack ── */
+/* ── Undo / Redo stack ── */
 const UNDO_MAX = 50;
 let undoStack = []; // array of JSON snapshots of song.blocks
+let redoStack = []; // redo counterpart
 
 function pushUndo() {
   const song = getSong(); if (!song) return;
   const snap = JSON.stringify(song.blocks);
-  // Don't push duplicate
   if (undoStack.length && undoStack[undoStack.length-1] === snap) return;
   undoStack.push(snap);
+  redoStack = []; // clear redo on new action
   if (undoStack.length > UNDO_MAX) undoStack.shift();
   document.getElementById('btnUndo').disabled = false;
+  document.getElementById('btnRedo').disabled = true;
 }
 
 function undoEdit() {
@@ -1420,6 +1646,11 @@ function newSong() {
   openSong(song.id);
   closeSidebar();
   setTimeout(()=>document.getElementById('songTitle').focus(),60);
+  // Show help on very first song creation if never seen before
+  if (!localStorage.getItem('gsb_help_seen')) {
+    setTimeout(showHelp, 600);
+    localStorage.setItem('gsb_help_seen','1');
+  }
 }
 
 function openSong(id) {
@@ -1433,7 +1664,7 @@ function openSong(id) {
   document.getElementById('songArtist').value = song.artist || '';
   document.getElementById('songKey').value    = song.key    || '';
   setSaveStatus(true);
-  undoStack = [];
+  undoStack = []; redoStack = [];
   document.getElementById('btnUndo').disabled = true;
   renderList();
   if (editorMode==='raw') syncRawFromBlocks();
@@ -1741,6 +1972,8 @@ function renderChordEditor() {
       const cr=el('div','ce-chord-row'); cr.dataset.idx=idx;
       cr.style.height = crH + 'px';
       cr.style.lineHeight = crH + 'px';
+      cr.title = (block.chords&&block.chords.length) ? 'Click to add chord · drag to reposition' : '⬅ Click anywhere on this row to place a chord';
+      if (!block.chords||!block.chords.length) cr.classList.add('empty-row');
 
       // Drop zone for chord drag
       cr.addEventListener('dragover', e=>{ e.preventDefault(); cr.classList.add('drag-over'); });
@@ -2081,6 +2314,140 @@ document.addEventListener('dragover', e=>{
 /* ═══════════════════════════
    RAW MODE
 ═══════════════════════════ */
+
+// Raw editor undo/redo stacks (separate from block-level undo)
+let rawUndoStack = [];
+let rawRedoStack = [];
+let rawUndoPaused = false;
+
+function rawPushUndo() {
+  if (rawUndoPaused) return;
+  const val = document.getElementById('rawEditor').value;
+  const last = rawUndoStack[rawUndoStack.length-1];
+  if (last === val) return;
+  rawUndoStack.push(val);
+  rawRedoStack = [];
+  if (rawUndoStack.length > 80) rawUndoStack.shift();
+  updateRawBtns();
+}
+
+function rawUndo() {
+  if (rawUndoStack.length < 2) return; // keep at least one state
+  const ta = document.getElementById('rawEditor');
+  rawRedoStack.push(rawUndoStack.pop()); // move current → redo
+  rawUndoPaused = true;
+  ta.value = rawUndoStack[rawUndoStack.length-1];
+  rawUndoPaused = false;
+  updateRawBtns();
+  schedSave();
+}
+
+function rawRedo() {
+  if (!rawRedoStack.length) return;
+  const ta = document.getElementById('rawEditor');
+  const next = rawRedoStack.pop();
+  rawUndoStack.push(next);
+  rawUndoPaused = true;
+  ta.value = next;
+  rawUndoPaused = false;
+  updateRawBtns();
+  schedSave();
+}
+
+function updateRawBtns() {
+  const u = document.getElementById('rawBtnUndo');
+  const r = document.getElementById('rawBtnRedo');
+  if (u) u.disabled = rawUndoStack.length < 2;
+  if (r) r.disabled = rawRedoStack.length === 0;
+}
+
+/* Convert the line at cursor: extract valid chords, keep N.C. / other tokens as
+   annotated text. Inserts a properly formatted chord-line + lyric-line pair. */
+function rawConvertLine() {
+  const ta = document.getElementById('rawEditor');
+  const val = ta.value;
+  const pos = ta.selectionStart;
+  const lines = val.split('\n');
+
+  // Find which line cursor is on
+  let charCount = 0, lineIdx = 0;
+  for (let i=0; i<lines.length; i++) {
+    if (charCount + lines[i].length >= pos) { lineIdx = i; break; }
+    charCount += lines[i].length + 1;
+  }
+
+  const line = lines[lineIdx];
+  const tokens = line.split(/( +)/); // split preserving spaces
+  const CP = /^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M)?(?:\d+)?(?:\/[A-G][#b]?)?$/;
+
+  // Rebuild chord line: keep real chords in place, replace non-chord tokens with spaces of equal length
+  let chordLine = '';
+  let lyricAnnotations = []; // { pos, text } for non-chord tokens
+  let cursor = 0;
+
+  tokens.forEach(tok => {
+    const trimmed = tok.trim();
+    if (trimmed === '' || /^ +$/.test(tok)) {
+      // pure whitespace — keep in chord line
+      chordLine += tok;
+    } else if (CP.test(trimmed)) {
+      // Valid chord — keep as-is
+      chordLine += tok;
+    } else {
+      // Non-chord token (N.C., //, %, text) — record position, blank it in chord line
+      lyricAnnotations.push({ pos: cursor, text: trimmed });
+      chordLine += ' '.repeat(tok.length);
+    }
+    cursor += tok.length;
+  });
+
+  // Build a note if there are NC-style annotations
+  const ncNote = lyricAnnotations.map(a => a.text).join(' · ');
+
+  rawPushUndo();
+  let replacement;
+  if (lyricAnnotations.length) {
+    // Replace the line with: chord line + (original lyric line below if exists, otherwise empty)
+    // And add NC note into lyric
+    const nextLine = lines[lineIdx+1] !== undefined ? lines[lineIdx+1] : '';
+    const newLyric = nextLine !== '' ? nextLine : '  ( ' + ncNote + ' )';
+    lines[lineIdx] = chordLine.trimEnd();
+    if (lines[lineIdx+1] !== undefined && lines[lineIdx+1] !== '') {
+      // Lyric already below — annotate it
+    } else {
+      lines.splice(lineIdx+1, 0, newLyric);
+    }
+  } else {
+    // No mixed content — just ensure it's treated as a chord line
+    lines[lineIdx] = chordLine.trimEnd();
+    if (!lines[lineIdx+1] || lines[lineIdx+1].trim() === '') {
+      lines.splice(lineIdx+1, 0, '');
+    }
+  }
+
+  ta.value = lines.join('\n');
+  rawPushUndo();
+  schedSave();
+}
+
+/* Clear the line at cursor */
+function rawClearLine() {
+  const ta = document.getElementById('rawEditor');
+  const val = ta.value;
+  const pos = ta.selectionStart;
+  const lines = val.split('\n');
+  let charCount = 0, lineIdx = 0;
+  for (let i=0; i<lines.length; i++) {
+    if (charCount + lines[i].length >= pos) { lineIdx = i; break; }
+    charCount += lines[i].length + 1;
+  }
+  rawPushUndo();
+  lines[lineIdx] = '';
+  ta.value = lines.join('\n');
+  rawPushUndo();
+  schedSave();
+}
+
 function setMode(mode) {
   editorMode=mode;
   document.getElementById('btnEdit').classList.toggle('on',mode==='edit');
@@ -2088,8 +2455,19 @@ function setMode(mode) {
   document.getElementById('chordEditor').style.display=mode==='edit'?'':'none';
   const ra=document.getElementById('rawEditor');
   ra.style.display=mode==='raw'?'flex':'none';
-  if (mode==='raw') syncRawFromBlocks();
-  else { parseRawIntoBlocks(); renderChordEditor(); }
+  // Raw toolbar
+  const rt=document.getElementById('rawToolbar');
+  if(rt) rt.classList.toggle('show', mode==='raw');
+  if (mode==='raw') {
+    syncRawFromBlocks();
+    // Seed the undo stack with the current content
+    rawUndoStack = [ra.value];
+    rawRedoStack = [];
+    updateRawBtns();
+  } else {
+    parseRawIntoBlocks();
+    renderChordEditor();
+  }
 }
 
 function syncRawFromBlocks() {
@@ -2109,7 +2487,10 @@ function syncRawFromBlocks() {
   document.getElementById('rawEditor').value=lines.join('\n').trimEnd();
 }
 
-function rawEdited() { schedSave(); }
+function rawEdited() {
+  rawPushUndo();
+  schedSave();
+}
 
 function parseRawIntoBlocks() {
   const song=getSong(); if(!song) return;
@@ -2126,6 +2507,17 @@ function parseRaw(raw) {
     if (/^[eEbBgGdDaA]\|/.test(t)) {
       let tl=[]; while(i<lines.length&&/^[eEbBgGdDaA]\|/.test(lines[i].trim())){tl.push(lines[i]);i++;}
       blocks.push({type:'tab',text:tl.join('\n')}); continue;
+    }
+    // Mixed chord/annotation line (e.g. "Am    N.C.") — has at least one real chord
+    // but also non-chord tokens. Treat as chord line if ≥1 chord found.
+    if (isMixedChordLine(line) && i+1<lines.length && !isChordLine(lines[i+1]) && lines[i+1].trim()!=='') {
+      const {chords, annotations} = extractChordsAndAnnotations(line);
+      // Embed annotations into the lyric line as inline notes
+      let lyric = lines[i+1];
+      if (annotations.length) {
+        lyric = lyric || '  (' + annotations.map(a=>a.text).join(' · ') + ')';
+      }
+      blocks.push({type:'pair', lyric, chords}); i+=2; continue;
     }
     if (isChordLine(line)&&i+1<lines.length&&!isChordLine(lines[i+1])&&lines[i+1].trim()!=='') {
       blocks.push({type:'pair',lyric:lines[i+1],chords:extractChords(line)}); i+=2; continue;
@@ -2144,11 +2536,54 @@ function isChordLine(line) {
   return cc>=1&&cc/tokens.length>0.5;
 }
 
+// Mixed line: has some real chords AND some non-chord tokens (N.C., //, % etc.)
+// Minimum: at least 1 chord, at least 30% of tokens are chords
+function isMixedChordLine(line) {
+  if (!line||!line.trim()) return false;
+  const tokens=line.trim().split(/\s+/).filter(t=>t.length>0);
+  const cp=/^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M)?(?:\d+)?(?:\/[A-G][#b]?)?$/;
+  const cc=tokens.filter(t=>cp.test(t)).length;
+  // Has chords but not a "pure" chord line — mixed content
+  return cc>=1 && cc/tokens.length>0.2 && cc/tokens.length<=0.5;
+}
+
 function extractChords(line) {
   const chords=[], cp=/[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M)?(?:\d+)?(?:\/[A-G][#b]?)?/g;
   let m; while((m=cp.exec(line))!==null) chords.push({pos:m.index,name:m[0]});
   return chords;
 }
+
+// Extract chords AND keep track of non-chord tokens for annotation
+function extractChordsAndAnnotations(line) {
+  const CP = /^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M)?(?:\d+)?(?:\/[A-G][#b]?)?$/;
+  const chords = [];
+  const annotations = [];
+  // Walk token by token preserving positions
+  let i = 0;
+  const tokenRe = /\S+/g;
+  let m;
+  while ((m = tokenRe.exec(line)) !== null) {
+    const tok = m[0], pos = m.index;
+    if (CP.test(tok)) {
+      chords.push({pos, name: tok});
+    } else {
+      // Non-chord token — record it
+      annotations.push({pos, text: tok});
+    }
+  }
+  return {chords, annotations};
+}
+
+
+/* Raw editor keyboard — Ctrl+Z/Y override */
+document.getElementById('rawEditor').addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='z' && !e.shiftKey) {
+    e.preventDefault(); rawUndo();
+  }
+  if ((e.ctrlKey||e.metaKey) && (e.key==='y' || (e.key==='z' && e.shiftKey))) {
+    e.preventDefault(); rawRedo();
+  }
+});
 
 /* ═══════════════════════════
    PASTE HANDLER
@@ -2478,7 +2913,28 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();newSong();}
   if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();if(currentId)enterPerform();}
   if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();forceSave();}
+  if(e.key==='?'||e.key==='/'){
+    const active=document.activeElement;
+    if(!active||!['INPUT','TEXTAREA'].includes(active.tagName)){
+      e.preventDefault(); showHelp();
+    }
+  }
   if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();undoEdit();}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();redoEdit();}
+});
+
+/* ═══════════════════════════
+   HELP OVERLAY
+═══════════════════════════ */
+function showHelp() {
+  document.getElementById('helpOverlay').classList.add('show');
+}
+function closeHelp() {
+  document.getElementById('helpOverlay').classList.remove('show');
+}
+// Close on backdrop click
+document.getElementById('helpOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('helpOverlay')) closeHelp();
 });
 
 /* ═══════════════════════════
