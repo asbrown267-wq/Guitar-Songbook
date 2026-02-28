@@ -1,1548 +1,3 @@
-
-Can create an area for me to put and edit guitar songs they will mostly be lyrics with chords and some tabs
-
-20 Feb
-
-Check frontend design skill
-Check frontend design skill
-I'll build you a stylish guitar song editor with a warm, vintage-inspired aesthetic — perfect for lyrics, chords, and tabs.
-
-
-Created a file, read a file
-Created a file, read a file
-Here's your Guitar Songbook — a warm, vintage-styled editor built for how guitarists actually write. Here's what it does:
-
-Core features:
-
-Song library in the sidebar — create, search, and delete songs
-Title & Key fields so you can track what key each song is in
-Auto-save as you type (with a visual saved indicator)
-Writing tools:
-
-§ Section button inserts labels like [Verse], [Chorus], etc.
-♩ Chord button prompts you to type a chord and drops it in at the cursor
-Tab Block inserts a blank 6-string tab template ready to fill in
-Views:
-
-Edit — plain editor
-Split — editor + rendered preview side by side
-Preview — chords highlighted in gold, tab lines in green, section labels in amber
-Your songs are saved automatically to your browser's local storage, so they'll be there next time you open the file. Use Ctrl/Cmd+N for a new song and Ctrl/Cmd+P to toggle preview.
-
-Guitar songbook
-Code · HTML 
-I want to open song in the book and have it scroll automatically with adjustable speeds for differing song speeds. Maybe 12 speeds
-
-20 Feb
-
-Read the existing guitar songbook to update it
-Read the existing guitar songbook to update it
-Now I'll rebuild the full file with a proper Perform mode — a clean full-screen view with auto-scroll and 12 speed settings.
-
-
-Created 2 files, ran a command, read a file
-Created 2 files, ran a command, read a file
-Your songbook now has a full Perform Mode — hit the purple ▶ Perform button to open it. Here's what's in there:
-
-The 12 speed settings are colour-coded and named after classical tempo markings:
-
-🟢 Slow (1–4): Larghissimo → Adagio
-🟠 Medium (5–8): Andante → Allegro
-🔴 Fast (9–12): Vivace → Furioso
-Controls:
-
-Click any numbered pip to jump to that speed instantly
-▶ / ⏸ to start and pause scrolling
-⟳ to reset back to the top
-✕ Exit to return to the editor
-Keyboard shortcuts in Perform mode:
-
-Space or K — play/pause
-← → — slower/faster speed
-R — reset to top
-Esc — exit
-A gradient progress bar at the top fills as you scroll through the song. The scroll is smooth and frame-rate driven so it stays consistent.
-
-Guitar songbook
-Code · HTML 
-I'll be pasting in the lyrics so I need to be able to insert text etc and edit it easily, the chords will sit above the lyrics so I need to be able to move them to the correct lyric
-
-21 Feb
-Let me think about what would make chord-above-lyric editing really smooth. The key insight is that chords need to be positioned horizontally above specific syllables — that's a fundamentally different editing model than a plain textarea.
-
-
-Read current songbook to preserve all existing functionality
-Read current songbook to preserve all existing functionality
-Good — I have the full picture. Now I'll rebuild the editor with a proper chord-above-lyric editing model. The core idea: lyrics are editable lines, and each lyric line has a paired chord row above it where you can click any position to place/edit a chord. Chords can be nudged left/right with arrow keys to align them to syllables precisely.
-
-
-Ran a command, created a file, read a file
-Ran a command, created a file, read a file
-This is a ground-up rebuild of the editor around how chord charts actually work. Here's how to use it:
-
-Pasting in lyrics:
-
-Switch to Raw mode and paste your lyrics directly — it works just like a text editor
-Switch back to Edit mode and the app automatically parses chord lines (lines where most tokens look like Am, G7, C/E etc.) and lyric lines into the visual editor
-If you paste multi-line text into a lyric field in Edit mode, it auto-splits into separate lines too
-Adding and moving chords:
-
-Each lyric line has a gold chord row above it — click anywhere on it to place a chord at that position
-A small input pops up — type the chord name and press Enter
-Click an existing chord to edit or rename it
-With a chord selected (tab to it or click), use ← → arrow keys to nudge it left or right one character at a time to align it to the right syllable
-Press Delete on a focused chord token to remove it
-Editing lyrics:
-
-Click any lyric line to edit it directly
-Press Enter to split the line and create a new one below
-Backspace on an empty line merges it with the line above
-Adding structure:
-
-§ Section — adds a section label (Verse, Chorus, etc.)
-♩ Lyric Line — adds a blank lyric line with a chord row above
-⌇ Tab — adds a guitar tab block
-Perform mode works exactly as before with all 12 speeds and autoscroll.
-
-Guitar songbook
-Code · HTML 
-make sure it saves any edits I make, i want to be able to transpose songs so if I change key it changes all the chords by a step up (e.g. a to a sharp to B) Once a song is saved, I need to also be able to search easily by artist or song name, it would be good to be able to alphabetise the songs as a filter 
-make this usable for mobile too
-
-21 Feb
-
-Read the full current songbook file
-Read the full current songbook file
-Good, I have the full picture. Now I'll do a comprehensive rebuild addressing: reliable auto-save on every keystroke, transposition engine, artist field + search by artist/title, alphabetical sort, and full mobile responsiveness with a slide-in sidebar.
-
-
-Ran a command, created a file, read a file
-Ran a command, created a file, read a file
-Here's everything that changed in this update:
-
-Reliable saving — every keystroke, chord move, block edit, and field change saves automatically within 400ms. There's a clear "● Saved / ○ Unsaved…" indicator, Ctrl/Cmd+S forces an immediate save, and the browser will warn you before closing if anything is unsaved.
-
-Transpose — the ♭ and ♯ buttons next to the Key field shift every chord in the song up or down one semitone. The Key field itself updates too (e.g. Am → Bbm → Bm). Full chromatic cycle handles sharps, flats, and slash chords like C/G correctly.
-
-Artist field — there's now an Artist input next to the song title. It shows in the song list and is searchable.
-
-Search — the search box filters by both title and artist simultaneously as you type.
-
-Three sort modes:
-
-Recent — newest edits first (default)
-A–Z — alphabetical by title, grouped under letter headers (A, B, C…)
-Artist — grouped by artist name, alphabetical within each group
-Mobile — the sidebar is now a slide-in drawer triggered by the ☰ menu button. The toolbar wraps sensibly on small screens, the chord editor uses touch-friendly tap targets, and the Perform mode shows − / + speed buttons instead of the pip grid on mobile. Everything is usable without a mouse.
-
-Guitar songbook
-Code · HTML 
-make it so that the size of text can be adjusted in case I want to be able to fit more of the lyrics/ chords on the screen
-
-21 Feb
-
-Read the current songbook file to understand the structure before adding font size controls
-Read the current songbook file to understand the structure before adding font size controls
-Good — I have the full picture. The key challenge is that charWidth is baked into chord positioning, so font size changes must remeasure it and re-render. I'll add a clean size control that works in both editor and perform mode.
-
-
-Edited 4 files
-Edited 4 files
-Now add the size control styles:
-
-
-Add size control widget styles before mobile breakpoint
-Add size control widget styles before mobile breakpoint
-Now add the size controls to the toolbar HTML:
-
-
-Add size slider to editor toolbar
-Add size slider to editor toolbar
-Now add the size control to the perform header:
-
-
-Add size control to perform header
-Add size control to perform header
-Now add the JavaScript for size control — insert before the INIT section:
-
-
-Add font size control JavaScript before INIT section
-Add font size control JavaScript before INIT section
-Now update measureCharWidth to accept a font size parameter, and call applyEditorSize/applyPerfSize on init:
-
-
-Update measureCharWidth to accept font size, and call size init on startup
-Update measureCharWidth to accept font size, and call size init on startup
-Also need to update buildPerfContent to use perfFontSize for chord token pixel positions:
-
-
-Edited 2 files
-Edited 2 files
-Also update pcr height to be dynamic based on perform size — and fix the perform chord row height to match font size:
-
-
-Make pcr height dynamic in buildPerfContent
-Make pcr height dynamic in buildPerfContent
-Also make the editor chord row height dynamic based on font size:
-
-
-Edited 2 files
-Edited 2 files
-Now let's verify the file looks correct and complete:
-
-
-Ran 2 commands
-Ran 2 commands
-Everything's wired up correctly. Now fix one issue — the mobile CSS still overrides font sizes with hard values, which would fight the dynamic sizing:
-
-
-Edited 2 files
-Edited 2 files
-Also fix the --perf-fs initial CSS value to use px not rem so it's consistent with the JS:
-
-
-Edited a file, ran a command, read a file
-Edited a file, ran a command, read a file
-Text size control is now added in two places:
-
-In the editor toolbar — a draggable slider labelled SIZE. Drag it left for smaller text (fits more on screen), right for larger. The number next to it shows the current size in px. Range is 10px–28px.
-
-In the Perform overlay header — a − and + button to step the perform text up or down independently. So you can have small text in the editor for editing, but big text when performing.
-
-Both settings are remembered between sessions — closing and reopening the file will restore your preferred sizes.
-
-Keyboard shortcuts:
-
-Ctrl/Cmd + — bigger editor text
-Ctrl/Cmd − — smaller editor text
-Ctrl/Cmd 0 — reset editor to default (16px)
-Ctrl/Cmd + / Ctrl/Cmd − also work inside Perform mode for the perform size
-Chord positions recalculate automatically whenever you change size, so chords always stay aligned above the right syllables.
-
-Guitar songbook
-Code · HTML 
-I want to see chord diagrams helping me to remind me the finger positioning, I should be able to toggle this on and off so it's visible or not
-
-21 Feb
-
-Read the current file to understand structure before adding chord diagrams
-Read the current file to understand structure before adding chord diagrams
-Good — I have the full picture. This is a substantial addition: I need to build a complete chord diagram library with SVG rendering, a toggleable panel in the editor, and chord diagrams visible in perform mode too. Let me do this carefully with targeted edits.
-
-
-Add chord diagram panel CSS after the statusbar styles
-Add chord diagram panel CSS after the statusbar styles
-Now add the chord diagrams toggle button to the toolbar:
-
-
-Add chord diagram toggle button to toolbar
-Add chord diagram toggle button to toolbar
-Now add the chord panel div to the editor-wrap:
-
-
-Add chord panel alongside editor
-Add chord panel alongside editor
-Now add the perform diagram bar and toggle button to the perform overlay:
-
-
-Edited 2 files, ran a command, viewed a file
-Edited 2 files, ran a command, viewed a file
-Now add the massive chord diagram library and all the panel logic. I'll insert it just before the INIT section:
-
-
-Add complete chord diagram library and panel logic before INIT
-Add complete chord diagram library and panel logic before INIT
-Now wire up refreshDiagPanel() after chord editor renders and after song opens, and wire enterPerform to build the diagram bar:
-
-
-Edited 3 files, ran a command, viewed a file
-Edited 3 files, ran a command, viewed a file
-Now wire enterPerform to build the diagram bar and apply state:
-
-
-Add diagram bar build and state apply in enterPerform
-Add diagram bar build and state apply in enterPerform
-Now add applyDiagPanel() to the INIT section so the panel restores on page load:
-
-
-Apply diagram panel state on init
-Apply diagram panel state on init
-Also need to add ce.innerHTML='' back since I accidentally split the function — let me check:
-
-
-Check renderChordEditor opening is intact
-Check renderChordEditor opening is intact
-Missing the ce.innerHTML='' before the forEach. Let me add it:
-
-
-Re-add missing ce.innerHTML clear before forEach
-Re-add missing ce.innerHTML clear before forEach
-Now add mobile CSS for the chord panel:
-
-
-Edited 2 files, ran a command, viewed a file
-Edited 2 files, ran a command, viewed a file
-Let me read the current file first before making changes.
-
-
-Read full current file
-Read full current file
-Good — I can see the previous attempt already added most of the chord diagram infrastructure but it's incomplete and has bugs. The chord data format is wrong (frets need to be relative, the barre logic is broken), the panel HTML may be missing, and the ce.innerHTML='' was accidentally removed. Let me do a clean, complete rewrite of just the chord diagram system — replacing everything from the CHORD_DB onwards with a correct implementation.
-
-
-Check what chord diagram code is already present
-Check what chord diagram code is already present
-Good — the structure is all there. The main issues are: (1) the chord data format is broken (frets stored as absolute fret numbers rather than properly relative), and (2) there are likely rendering bugs in drawChordDiagram. Let me replace the entire chord DB + draw function with a clean, correct implementation using a well-tested format.
-
-
-View chord DB and draw function
-View chord DB and draw function
-Now I have the full picture. The core problem is the data format: frets are stored as absolute fret numbers (e.g. Cm has [−1,3,5,5,4,3]) but the renderer tries to use them as relative. I need to rewrite the DB using a clean, unambiguous format: each entry stores base (lowest fret shown, 1 = open position) and fingers as fret numbers relative to base (1=first shown fret, 0=open, −1=muted). Let me replace the whole CHORD_DB and drawChordDiagram with a clean correct version.
-
-
-Replace entire CHORD_DB and drawChordDiagram with clean correct implementation
-Replace entire CHORD_DB and drawChordDiagram with clean correct implementation
-Now remove the old DB entries (everything from 'Cm': to };) and replace the draw function:
-
-
-Viewed 3 files, ran a command
-Viewed 3 files, ran a command
-Good — now I can replace the orphaned old DB + old draw function with the clean new one:
-
-
-Remove old leftover DB entries and replace old drawChordDiagram with clean version
-Remove old leftover DB entries and replace old drawChordDiagram with clean version
-Now let's verify the file is clean and the key functions are all present:
-
-
-Verify chord diagram implementation is clean
-Verify chord diagram implementation is clean
-All clean — no old format remaining, all functions present, script tags balanced. Let me also do a quick logic check on a few chord entries to confirm the data is correct:
-
-
-Ran a command, read a file
-Ran a command, read a file
-Chord diagrams are now fully working. Here's how to use them:
-
-In the editor — click ⬡ Chords in the toolbar to open a panel on the right side. It automatically shows a diagram for every chord used in the current song. Hover over any chord token in the editor and its diagram highlights in the panel. Toggle the button again to hide it.
-
-In Perform mode — click ⬡ Diagrams in the header to show a bar of chord diagrams along the bottom of the screen. Toggle it again to hide. Your preference for both panels is saved, so it'll stay on or off next time you open the app.
-
-What the diagrams show:
-
-The nut is a thick cream bar at the top for open-position chords; up-the-neck chords show a fret number (e.g. 4fr)
-Amber dots = where to press your fingers
-Orange bar = barre across strings
-○ = open string, ✕ = muted/don't play
-The library covers 60+ chords including all the common open shapes, barre shapes (F, Bm, C#m etc.), 7ths, maj7ths, sus2/sus4, and add9 chords.
-
-Guitar songbook
-Code · HTML 
-I also need to be able to make variations of the same chord, so allow me to see differnt versions in case I can't master the one initially shown, It would be good that If I hover on a chord it also demonstrates that finger positioning.
-
-Any other suggestions?
-
-21 Feb
-Let me read the current file before making changes.
-
-
-Read full current songbook file
-Read full current songbook file
-Good — I have the full picture. This is a substantial feature addition. I need to: (1) expand the chord DB to include multiple voicings per chord with difficulty ratings and names, (2) build a hover tooltip that shows a large diagram instantly, (3) add a voicing carousel in the side panel so you can flip through alternatives, and (4) suggest some improvements. Let me write the whole thing carefully.
-
-
-Viewed 2 files, ran a command
-Viewed 2 files, ran a command
-Now I'll replace everything from the chord diagram library section to getSongChords with the new multi-voicing system + hover tooltip, plus update the panel and tooltip rendering. This is a big replacement — let me identify exactly what to replace:
-
-
-Replace entire chord diagram system with multi-voicing DB, hover tooltip, and improved panel
-Replace entire chord diagram system with multi-voicing DB, hover tooltip, and improved panel
-Let me read the current file first.
-
-
-Read the full current songbook file
-Read the full current songbook file
-Good. Now let me see the truncated section — especially the existing chord DB and CSS for the diagram panel:
-
-
-Viewed 3 files
-Viewed 3 files
-Now I have a complete picture. I'll do a comprehensive rewrite: multi-voicing DB, hover tooltip, improved panel with voicing carousel, plus the suggested improvements. This is a large file so I'll write the new file from scratch rather than patching:
-
-
-Ran a command, viewed a file
-Ran a command, viewed a file
-Let me read the full current file before making any changes.
-
-
-Viewed 2 files, ran a command
-Viewed 2 files, ran a command
-Good — I now have the complete picture. Let me build the full updated file. The strategy is:
-
-Replace the chord DB with multi-voicing arrays
-Add a hover tooltip overlay (shows big diagram + voicing nav)
-Update the side panel to show voicing carousel with ← → buttons
-Update highlightDiag to also show the tooltip
-
-Replace chord diagram CSS section with expanded version including tooltip and voicing carousel styles
-Replace chord diagram CSS section with expanded version including tooltip and voicing carousel styles
-Now add the tooltip HTML element to the body (after the perform overlay):
-
-
-Add chord hover tooltip HTML element
-Add chord hover tooltip HTML element
-Now replace the entire chord DB + all diagram system functions with the new multi-voicing version:
-
-
-Replace entire chord diagram library with multi-voicing system, hover tooltip, and improved panel
-Replace entire chord diagram library with multi-voicing system, hover tooltip, and improved panel
-Now remove the old single-voicing CHORD_DB entries and old functions:
-
-
-Check what old code remains after replacement
-Check what old code remains after replacement
-There's a duplicate old section. I need to remove lines 1808 onwards (the old DB + functions). Let me find the exact range:
-
-
-Viewed 2 files, ran 2 commands
-Viewed 2 files, ran 2 commands
-All clean — no duplicates, syntax valid, all elements present. Now update the mobile CSS to handle the wider panel:
-
-
-Update mobile CSS for chord panel and add tooltip mobile rules
-Update mobile CSS for chord panel and add tooltip mobile rules
-Now update the tok.onmouseenter/leave handlers to pass the element for tooltip positioning:
-
-
-Update chord token hover to pass element for tooltip positioning
-Update chord token hover to pass element for tooltip positioning
-Final syntax check and verify everything's solid:
-
-
-Ran a command, read a file
-Ran a command, read a file
-Here's everything that's been added:
-
-Chord voicings — every chord now has 1–3 fingering options sorted easiest first. Use the ‹ › arrows on each card in the panel to flip through them. A badge shows which you're on (e.g. 2/3). The three dots below each diagram are clickable difficulty jumps — one dot = beginner, three = advanced. Your selected voicing per chord is remembered as you navigate.
-
-Hover tooltip — hover any chord name in the editor and a large popup appears showing the diagram, voicing name, difficulty stars, and the fingering tip. You can navigate through voicings from within the tooltip using its own ‹ › buttons — useful when you want to compare voicings without the panel open.
-
-Perform mode — the diagram bar also reflects whatever voicing you've selected, and clicking any chord in the bar cycles to the next voicing so you can swap on the fly.
-
-Your suggestion ideas — here are a few things worth adding next:
-
-Capo tool — enter capo fret and the app transposes the display but shows the shapes you actually play
-Practice mode — a simplified view showing only chords (no lyrics), great for drilling transitions
-Chord usage stats — highlight which chords appear most so you know what to practice hardest
-Print/export — a clean printable layout with all diagrams alongside the lyrics
-BPM tap tempo — tap a button to set autoscroll speed by tapping the beat instead of picking a preset
-Guitar songbook
-Code · HTML 
-when you've put in the tab and hover to see the chords you can't click through to see the variations, by trying to click on the pop out it disappears
-
-try a new colour scheme away from the brown and yellow
-
-Put in suggestions
-
-make it so that when I start typing a name it finds already added artists as options 
-
-The song title font when typing is annoyingly a different font for some reason 
-
-Is it best to use this in claude if I want to keep improving it but put it into use
-
-21 Feb
-Let me read the current file before making changes.
-
-
-Viewed 3 files
-Viewed 3 files
-Let me read the full file first before making all these changes.
-
-
-Read the rest of the JS
-Read the rest of the JS
-Good, I have the full picture now. Let me tackle all the issues in one comprehensive update:
-
-Tooltip bug — pointer-events:none prevents clicking the nav buttons; need hover-bridge logic
-New colour scheme — slate/teal/indigo instead of brown/amber
-Suggestions panel — built-in chord progression & practice suggestions
-Artist autocomplete — datalist from existing songs
-Song title font — fix the inconsistent font
-
-Backup before major edit
-Backup before major edit
-Now I'll make all the changes. Starting with the CSS — full colour scheme replacement and tooltip fix:
-
-
-Edited 14 files
-Edited 14 files
-Now fix the tooltip — the critical bug is pointer-events:none plus the tooltip hiding on mouseleave. Replace with a hover-bridge approach:
-
-
-Fix tooltip - make it interactive with pointer-events and hover bridge
-Fix tooltip - make it interactive with pointer-events and hover bridge
-Now fix perform overlay colours:
-
-
-Edited 2 files
-Edited 2 files
-Now fix the perform diagram bar and SVG diagram colours:
-
-
-Fix perform diagram bar and tab colours for new scheme
-Fix perform diagram bar and tab colours for new scheme
-Now update the SVG renderer to use the new colour scheme:
-
-
-Update SVG diagram renderer for new colour scheme - dark navy bg, teal/blue accents
-Update SVG diagram renderer for new colour scheme - dark navy bg, teal/blue accents
-Now add the suggestions panel CSS and the artist autocomplete datalist to the HTML. First add suggestions CSS before the mobile section:
-
-
-Add suggestions panel CSS before mobile breakpoint
-Add suggestions panel CSS before mobile breakpoint
-Now add the suggestions button to the toolbar and suggestions panel to the editor wrap, plus the datalist for artist autocomplete:
-
-
-Edited 3 files
-Edited 3 files
-Now replace the tooltip JS to fix the hover-bridge (keep tooltip open when mouse moves to it):
-
-
-Fix tooltip JS - use hover bridge with delay to prevent flickering when moving to tooltip
-Fix tooltip JS - use hover bridge with delay to prevent flickering when moving to tooltip
-Also update the highlightDiag function to use scheduleHideTooltip instead of hideChordTooltip so the tooltip lingers properly:
-
-
-Update highlightDiag to use scheduled hide
-Update highlightDiag to use scheduled hide
-Now add all the JS for suggestions panel and artist autocomplete. Add before measureCharWidth:
-
-
-Add suggestions panel JS and artist autocomplete JS before measureCharWidth
-Add suggestions panel JS and artist autocomplete JS before measureCharWidth
-Now initialise both panels on startup:
-
-
-Add suggestions panel and artist suggestions to init
-Add suggestions panel and artist suggestions to init
-Also call updateArtistSuggestions after saving:
-
-
-Update artist suggestions after each save
-Update artist suggestions after each save
-Now add the mobile rule for the suggestions panel:
-
-
-Add mobile rule for suggestions panel
-Add mobile rule for suggestions panel
-Let me do a final syntax check and then deliver:
-
-
-Ran 6 commands
-Ran 6 commands
-The measureCharWidth function is missing its first line — the function declaration got eaten. Let me check:
-
-
-Find measureCharWidth in file
-Find measureCharWidth in file
-The function measureCharWidth(px) { line was accidentally consumed by the str_replace. Let me fix it:
-
-
-Edited a file, ran a command
-Edited a file, ran a command
-Clean. Let me do one final check to make sure all key features are wired up correctly:
-
-
-Ran 2 commands
-Ran 2 commands
-Good — the pointer-events:none instances are on the grain texture overlay and the scroll fade gradient (both fine). The tooltip itself no longer has it. The mouseenter is wired up. Let me fix the check:
-
-
-Ran a command, read a file
-Ran a command, read a file
-Here's everything that changed:
-
-Tooltip fix — the old tooltip had pointer-events:none so clicks passed straight through it and it vanished. Now it's fully interactive. There's also a 120ms "hover bridge" — when your mouse moves from a chord token to the tooltip, there's a small grace window so it doesn't flicker away before you get there.
-
-New colour scheme — dark navy/slate base (
-#0f1117) with blue accents, terracotta chord names, and teal for tabs. The grain texture is also toned down. Much easier on the eyes for long sessions.
-
-💡 Ideas panel — click the new "Ideas" button in the toolbar. It shows chord progressions (matched to chords already in your song where possible), randomised practice tips, strumming patterns, and song structure templates. Click any progression chip to see which chords are new to you.
-
-Artist autocomplete — the artist field now has a <datalist> that populates from all artists you've already added. As you type it'll suggest matching names.
-
-Song title font — it was using Playfair Display (a serif display font) which looked odd while typing. Now it's Special Elite like everything else.
-
-On your last question — should you use Claude to keep improving it while also using it?
-
-The honest answer: Claude works well for iterating, but has real limits for production use. A few things to know:
-
-File is self-contained — that's actually great for portability. You can host it anywhere (GitHub Pages is free and takes 2 minutes to set up) and keep a copy here to edit
-Conversation length — we're getting deep into a long context. Each session I have to re-read the whole file. If the file grows much bigger, I'll start making more mistakes. Saving important state to a companion notes document helps
-Best workflow — keep the live version on GitHub Pages or similar, keep the source file backed up, and come back to Claude with specific change requests. The more specific ("add X feature to Y section"), the cleaner the result
-Alternative — once it's stable enough, moving development to VS Code gives you git history, undo, and the ability to test changes before they're permanent. That said, Claude is genuinely useful for adding features you couldn't easily write yourself
-Guitar songbook
-Code · HTML 
-talk me through how to get it on github, my concern is that if update code I lose the content put onto the artifact
-
-21 Feb
-Great question, and your concern is completely valid — let me explain exactly what's happening and how to solve it.
-
-The key thing to understand: your songs are stored in your browser, not in the file
-
-The songbook saves everything to localStorage — that's storage tied to whatever browser/domain you're viewing the file from. So:
-
-If you open the file from your desktop → songs live in that browser's local storage for local files
-If you host it on GitHub Pages → songs live in that browser's local storage for that GitHub Pages URL
-They're completely separate buckets — changing the code doesn't touch the songs at all
-This means updating the code on GitHub is totally safe. Your songs survive code updates as long as you're on the same domain in the same browser.
-
-The only real risk is if you:
-
-Clear your browser's localStorage/site data
-Use a different browser or device
-GitHub changes your Pages URL
-So you'll want an Export/Import feature before relying on it seriously. I'd add that before you go live. One button dumps all your songs to a JSON file you save locally; another imports it back. That's your real backup.
-
-How to get it on GitHub Pages — step by step
-
-1. Create a GitHub account if you don't have one — github.com, it's free.
-
-2. Create a new repository
-
-Click the + top right → New repository
-Give it a name like guitar-songbook
-Set it to Public (required for free Pages hosting)
-Tick "Add a README file"
-Click Create repository
-3. Upload your file
-
-Inside the repo, click Add file → Upload files
-Drag in your guitar-songbook.html
-Important: rename it to index.html before uploading, or GitHub Pages won't serve it as the homepage
-Scroll down, click Commit changes
-4. Enable GitHub Pages
-
-Go to Settings (tab along the top of your repo)
-Scroll down to Pages in the left sidebar
-Under "Branch", select main and folder /root
-Click Save
-After about 60 seconds, it gives you a URL like https://yourusername.github.io/guitar-songbook
-5. That's it. Visit that URL and your songbook is live.
-
-Updating the code later
-
-When you come back to Claude and I give you an updated file:
-
-Go to your repo on GitHub
-Click on index.html
-Click the pencil icon (Edit) top right — or for a whole file replacement, click the three dots → Delete, then upload the new version
-Commit the change
-GitHub Pages updates automatically within about 30 seconds
-Your songs are untouched because they live in localStorage for that domain, not in the HTML file.
-
-What I'd strongly recommend adding first
-
-Before you start using it seriously, let me add Export/Import so you have a real backup. It would be two buttons in the sidebar — "Export Songs" saves a .json file to your computer, "Import Songs" loads it back. That way if anything ever goes wrong with localStorage, you haven't lost everything. Want me to add that now before you set up GitHub?
-
-build in undo button
-
-make the chords dragable after entering above lyrics to position them in the right order for rhythm and changes
-
-Also I need it to work in some ways like a word document, so enter moves the line down, backspace deletes or moves lines up 
-
-We can keep adding lyric lines and tabs etc, but editing needs to be easier than it currently is at the moment
-
-There's also use cases where the chords are copied over as lyrics but are blatantly chords, so C      G.      Am etc and it would be good for this to either read these and put them immedicately as chords, keep in mind words like 'A' at the start of a sentence for lyrics doesn't qualify as a chord 
-
-might be best to password protect this in someway
-
-Show more
-22 Feb
-Let me read the current file thoroughly before making changes.
-
-
-Read full current file
-Read full current file
-Let me read the full file first.
-
-
-Ran 3 commands
-Ran 3 commands
-Good — I have a clear picture of the full codebase. This is a substantial rebuild of the editor layer. Let me now write the complete updated file with all requested features.
-
-
-Read end of chord DB and diagram code
-Read end of chord DB and diagram code
-Good, I have a thorough understanding of the full codebase now. Let me implement all the changes in one go - this is a major editor rewrite.
-
-
-Backup before major changes
-Backup before major changes
-Now I'll make all the targeted changes. Starting with CSS additions for drag, undo, password lock:
-
-
-Add CSS for drag-drop chords, undo button, lock screen, chord-line detection banner
-Add CSS for drag-drop chords, undo button, lock screen, chord-line detection banner
-Now add the undo button and lock button to the toolbar HTML:
-
-
-Edited 2 files
-Edited 2 files
-Now add the lock screen HTML before the closing </body>:
-
-
-Add lock screen HTML
-Add lock screen HTML
-Now update the statusbar hint text and add export/import buttons to sidebar. First the statusbar:
-
-
-Update status bar hint text
-Update status bar hint text
-Now the big JS changes. Replace the undo, blockChanged, and renderChordEditor functions, plus add drag handling and password lock. Let me do these section by section:
-
-
-Edited 4 files
-Edited 4 files
-Now add Ctrl+Z to the keyboard handler:
-
-
-Add Ctrl+Z undo keyboard shortcut
-Add Ctrl+Z undo keyboard shortcut
-Now the big one — replace renderChordEditor with the improved word-processor-style version with drag support and chord-line detection:
-
-
-Replace renderChordEditor with improved version featuring drag, better keyboard nav, chord-line detection
-Replace renderChordEditor with improved version featuring drag, better keyboard nav, chord-line detection
-Now remove the old renderChordEditor body (everything from the old forEach to refreshDiagPanel):
-
-
-Remove old renderChordEditor body that's now duplicate
-Remove old renderChordEditor body that's now duplicate
-Now add the chord drag functions after removeChord:
-
-
-Add chord drag-and-drop functions after removeChord
-Add chord drag-and-drop functions after removeChord
-Now update nudgeChord to use pushUndo:
-
-
-Update nudgeChord to push undo
-Update nudgeChord to push undo
-Now add the password lock system. Add before measureCharWidth:
-
-
-Add password lock system JS before measureCharWidth
-Add password lock system JS before measureCharWidth
-Now update addSection, addLyricLine, addTabBlock, deleteBlock to use pushUndo:
-
-
-Ran 3 commands, edited 2 files
-Ran 3 commands, edited 2 files
-Now also update closeChordInput to use pushUndo:
-
-
-Update closeChordInput to push undo on save
-Update closeChordInput to push undo on save
-Also update the chordInput keydown handler for delete:
-
-
-Update chordInput delete handler to use pushUndo
-Update chordInput delete handler to use pushUndo
-Also update transpose to use pushUndo:
-
-
-Update transpose to push undo
-Update transpose to push undo
-Now do the syntax check:
-
-
-Full syntax and feature check
-Full syntax and feature check
-All clean. Let me copy to outputs and deliver:
-
-
-Ran a command, read a file
-Ran a command, read a file
-Here's everything that's changed:
-
-↩ Undo — Up to 50 levels. Every edit (placing chords, typing lyrics, deleting blocks, transposing) pushes a snapshot. Ctrl+Z works from keyboard too. The button greys out when there's nothing to undo, and resets when you open a different song.
-
-Draggable chords — Grab any chord token and drag it to a new position on the same row or a completely different line. A custom floating ghost follows your cursor showing the chord name. The target row highlights as you hover over it.
-
-Word-processor editing:
-
-Enter splits the line at the cursor — text after cursor moves to a new line below
-Backspace at line start merges with the line above (lyrics join, chords from both are kept)
-Delete at line end pulls the next line up into the current one
-↑/↓ arrows in lyrics move between lyric lines
-Section and tab blocks also respond to Enter and Backspace naturally
-Chord-line detection — When you paste or type something like C      G      Am into a lyric field, a yellow banner appears: "Looks like a chord line → Convert to chords." Clicking it extracts the chords at their exact horizontal positions and clears the lyric field. It's deliberately strict — single letters like "A" at the start of a sentence won't trigger it, only things with clear chord syntax (two or more chords, accidentals like C#, numbered chords like G7, etc.)
-
-Password lock — The 🔒 button in the toolbar locks the app behind a password screen. First time, it asks you to set one. After that, clicking 🔒 locks immediately. The password is hashed before storage so it's not sitting in plaintext. It also auto-locks on page load if a password is set — so nobody just opening the file gets straight in.
-
-Guitar songbook
-Code · HTML 
-how do I update GIthub woith the changes?
-
-22 Feb
-Really simple — you're just replacing one file.
-
-Go to your repository on GitHub
-
-Find your repo (e.g. github.com/yourusername/guitar-songbook)
-
-Click on index.html in the file list
-
-Click the pencil icon (Edit this file) in the top right of the file view
-
-Select all and delete everything in the editor (Ctrl+A then Delete)
-
-Paste your new file contents — open the downloaded guitar-songbook.html, select all, copy, paste into the GitHub editor
-
-Scroll down and click "Commit changes"
-
-Give it a message if you want (e.g. "Add undo, drag chords, lock screen") then click the green button.
-
-Wait about 30 seconds and your live site at https://yourusername.github.io/guitar-songbook will update automatically.
-
-Tip for next time — if pasting into the GitHub web editor feels clunky (it can be slow with a big file), the slightly cleaner method is:
-
-Click the three dots ··· next to the pencil icon
-Choose Delete file, commit that
-Then Add file → Upload files, drag in your new index.html, commit
-Same result, sometimes easier with a large file.
-
-I was just editing a saved song and it disappeared, very odd why might this be. I can see the name down the left side, but the lyrics completely disappeared like they were deleted after editing
-
-22 Feb
-This is almost certainly a localStorage timing bug — let me explain what's probably happening.
-
-The most likely culprit: the undo stack + auto-save race
-
-When you edit heavily, this sequence can happen:
-
-You type/edit something
-The 400ms auto-save timer starts
-You do something that triggers renderChordEditor() which re-reads song.blocks from memory
-But somewhere in the new undo/editing code I wrote, a blockChanged(false) call might be firing with a stale or empty blocks array before the save completes
-The lyricKeydown merge functions (Backspace to merge lines) are the most likely place — if the block index is off by one after a re-render, it could splice the wrong block.
-
-The second possibility: the chord-line detection
-
-If your lyrics contain something that looks like chord names — even just words starting with capital letters like "Am" in "Amber" or "G" followed by a chord — the isClearChordLine function might have flagged the lyric and the auto-convert ran or the block got replaced.
-
-The third possibility: browser localStorage limits
-
-If your songs data got large enough to hit the ~5MB localStorage limit, the save silently fails. The song appears in the list (the list is rendered from the in-memory songs array) but on next load it's empty because the save never actually wrote.
-
-What to check right now
-
-Open your browser's developer tools (F12), go to Application → Local Storage and click your site's URL. You should see gsb_v3 — click it and look at the value. If the song is there with blocks, it's a display bug. If the blocks array is empty ([]), the data was lost before saving.
-
-What I'd suggest fixing
-
-The most important thing is getting Export/Import in before you rely on it heavily — that way even if something goes wrong you have a backup JSON file. Want me to add that now? It's a quick addition — two buttons in the sidebar, one saves all your songs to a .json file on your computer, one loads them back.
-
-I'd also add a small safety check to the merge-on-backspace logic to make sure it can't accidentally wipe a block that still has content.
-
-add it in, how do I open the browser developer tools on a mac?
-
-22 Feb
-On Mac: Cmd + Option + I — that opens DevTools. Or right-click anywhere on the page and choose Inspect.
-
-Then click Application in the top tab bar → Local Storage on the left → click your site URL.
-
-Now let me add the Export/Import:
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Now add the JS — I'll put it right after the deleteSong function:
-
-
-Edited a file, ran a command, read a file
-Edited a file, ran a command, read a file
-Done. Two new buttons appear at the top of the sidebar — ⬇ Export and ⬆ Import.
-
-Export saves a .json file to your Downloads folder named something like guitar-songbook-2026-02-22.json. Do this regularly as your backup — it takes one click.
-
-Import lets you load that file back. It gives you two choices:
-
-Merge (OK) — adds the imported songs alongside anything already there, skipping any duplicates
-Replace (Cancel → confirm) — wipes everything and loads only the imported songs
-For the disappearing song — before updating GitHub, open DevTools (Cmd+Option+I), go to Application → Local Storage, find gsb_v3 and check if the song's blocks are empty. If they are, and you haven't exported yet, the data is unfortunately gone from that session. Going forward the export habit will protect you — once a week is probably enough unless you're adding a lot.
-
-Guitar songbook
-Code · HTML 
-some chord maps missing Cadd9, Em7 are examples, not particularly complicated ones either
-
-22 Feb
-Let me check what's currently in the chord DB and add the missing ones.
-
-
-List all chord names in CHORD_DB
-List all chord names in CHORD_DB
-Clear gaps. Missing: Cadd9, Em7, Dm7, Am7 already exists but many more 7ths and add9s are missing. Let me add a solid batch of the most commonly needed ones:
-
-
-Add missing common chords to CHORD_DB
-Add missing common chords to CHORD_DB
-Need to close off the CHORD_DB object properly since I left off the closing };:
-
-
-Ran 2 commands
-Ran 2 commands
-The closing }; is missing — the chord DB is never terminated. Let me fix that and also check the duplicate Gadd9 and Am7:
-
-
-Close CHORD_DB properly and fix duplicate entries
-Close CHORD_DB properly and fix duplicate entries
-Now remove the duplicate Gadd9 and Am7 entries (they existed in the original DB and I added them again):
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Actually having duplicate keys in a JS object just means the second one silently overwrites the first — not an error but wasteful. Let me just remove both duplicate lines cleanly:
-
-
-Ran 3 commands
-Ran 3 commands
-All clean.
-
-
-Presented file
-Presented file
-Added 30+ missing chords across several categories:
-
-add9s — Cadd9, Dadd9, Eadd9 (Gadd9 was already there)
-
-Minor 7ths — Em7, Dm7, Bm7, Cm7, F#m7, Gm7 (Am7 was already there)
-
-Dominant 9ths — G9, A9, D9, E9
-
-Major 9ths — Cmaj9, Gmaj9, Amaj9
-
-Missing sus2s — Csus2, Esus2, Gsus2
-
-Diminished — Bdim, Cdim, Ddim, Edim, Fdim, Gdim, Adim
-
-Augmented — Caug, Gaug, Aaug, Eaug
-
-6ths — A6, D6, E6, G6, Am6, Em6
-
-If you spot any others that come up in songs you're adding, just let me know the chord name and I'll add it.
-
-Guitar songbook
-Code · HTML 
-add more slash chord diagrams 
-think hard for anymore improvements to enhance user experience and make it easier to add and edit songs, but also to improve the user experience when trying to actually play the songs, 
-Something to consider is when playing a song, the speed and only go at one speed but when you get to a section with a solo or when you have an interlude of just chords the one speed likely won't help, so this means you have to manually intervene 
-It would be amazing if the speed could read when the player would need it to slow or speed up depending on if it's a verse or lines of chords, it's not a precise science, but if we can reduce the interaction with the page whilst performing then that would be optimal 
-get the team together
-
-22 Feb
-Let me read the current file thoroughly before planning.
-
-
-Ran 4 commands
-Ran 4 commands
-Good. Now I have a thorough picture. Let me plan all the improvements, then implement:
-
-Plan:
-
-Smart auto-scroll — analyse each block at build time: chord-only lines get faster speed, tab blocks slower, sections pause briefly, lyrics run at base speed. Embed speed hints as data attributes on .pb divs, then scrollStep reads the next visible block and interpolates to its target speed smoothly.
-Slash chords — add C/E, G/B, D/F#, F/C, Am/E, Em/B, Cadd9/E etc.
-Per-section speed override in editor — let user tag a section with a speed hint (e.g. [Chorus @fast] or click a speed badge on the section block).
-Smooth speed transitions — instead of snapping between speeds, lerp over ~1 second.
-Perform mode: tap-tempo — tap T key to set speed from your playing.
-Perform mode: next-section preview — show upcoming section name in a small badge.
-Editor: duplicate block button — copy a line/section.
-Editor: move block up/down — drag handle or ↑↓ buttons.
-
-Ran 2 commands
-Ran 2 commands
-No slash chord diagrams yet. Let me now do all changes systematically.
-
-Step 1: Add slash chords to CHORD_DB
-
-
-Edited 2 files, ran 2 commands
-Edited 2 files, ran 2 commands
-Also fix the bad G/D entry (wrong argument count):
-
-
-Fix G/D entry with wrong argument structure
-Fix G/D entry with wrong argument structure
-Step 2: Smart auto-scroll system — the key change. I'll add section speed hints, smooth speed transitions, and auto-speed logic:
-
-
-Replace perform mode with smart auto-scroll, smooth transitions, tap tempo, section preview
-Replace perform mode with smart auto-scroll, smooth transitions, tap tempo, section preview
-Let me read the current state carefully before doing anything.
-
-
-Ran 4 commands
-Ran 4 commands
-Good — the smart scroll JS is already in from the previous session. Now I need to: wire up the HTML buttons (Smart, Tap, section preview), add CSS for new perform controls, add move-block and duplicate-block to editor, finish slash chords properly, and add the keyboard handler for tap. Let me read what's missing.
-
-
-Read after tapTempo to see keyboard handler
-Read after tapTempo to see keyboard handler
-Now I have a complete picture. Let me do all the remaining work in one focused pass: update the perform HTML with smart/tap buttons and section preview, add CSS for all new elements, wire keyboard tap, add move/duplicate block to editor, and complete the slash chord fix.
-
-
-Backup before changes
-Backup before changes
-Step 1 — Update perform overlay HTML (add Smart toggle, Tap tempo, section preview banner):
-
-
-Update perform overlay HTML with smart scroll, tap tempo, section preview
-Update perform overlay HTML with smart scroll, tap tempo, section preview
-Step 2 — Add CSS for all new elements (smart bar, tap button, move/dup block buttons, speed indicator):
-
-
-Add CSS for smart scroll bar, tap button, move/dup buttons, section preview
-Add CSS for smart scroll bar, tap button, move/dup buttons, section preview
-Step 3 — Wire T key for tap tempo in keyboard handler, and add S for smart toggle:
-
-
-Add T=tap and S=smart keyboard shortcuts in perform mode
-Add T=tap and S=smart keyboard shortcuts in perform mode
-Step 4 — Update applySmartBtn and updateSectionPreview to also drive the smart bar label:
-
-
-Enhance applySmartBtn to update smartBar visibility and add live speed bar update
-Enhance applySmartBtn to update smartBar visibility and add live speed bar update
-Step 5 — Hook updateSmartBarHint into getSmartSpeedPx:
-
-
-Call updateSmartBarHint and updateSectionPreview from getSmartSpeedPx
-Call updateSmartBarHint and updateSectionPreview from getSmartSpeedPx
-Step 6 — Add move-up/down and duplicate buttons to the editor blocks:
-
-
-Edited 2 files, ran a command
-Edited 2 files, ran a command
-Step 7 — Add move/dup tool buttons to each block in renderChordEditor. I'll add a blockTools helper and call it on each block type:
-
-
-Add blockTools helper function after delBtn
-Add blockTools helper function after delBtn
-Now add blockTools calls inside renderChordEditor for each block type:
-
-
-Edited 3 files
-Edited 3 files
-Step 8 — Fix the bad slash chord fingering for G/D (had wrong arg layout in previous session):
-
-
-Ran 2 commands, edited a file
-Ran 2 commands, edited a file
-Now add several more important slash chords that are missing:
-
-
-Add more slash chords and close CHORD_DB properly
-Add more slash chords and close CHORD_DB properly
-Step 9 — Final syntax check and verify all features:
-
-
-Full verification
-Full verification
-All 31 features present, JS clean.
-
-
-Presented file
-Presented file
-Here's everything that went in:
-
-⚡ Smart Auto-Scroll
-
-The scroll speed now reads the content approaching the middle of your screen and automatically adjusts:
-
-Tab / solo sections → slows to ~45% of your base speed — lots to read, fingers busy
-Chord-only lines (no lyrics) → slows to ~65% — need time to see the changes coming
-Section headers (Verse, Chorus etc.) → drops right down briefly as you approach, like a breath before the section
-Dense lyric lines → speeds up slightly — less harmonic complexity, more text to skim
-Normal lyrics → stays at your chosen base speed
-The speed transitions are smooth — it lerps gradually over about 2 seconds rather than snapping, so it never feels jarring.
-
-A thin status bar under the header shows what content type is being read and what section is coming up next.
-
-⚡ Smart button toggles it on/off (S key). ♩ Tap button lets you tap to your strumming to dial in the right base speed (T key, or tap repeatedly).
-
-Editor improvements
-
-Every block now has ↑ ↓ ⧉ buttons on hover — move any line/section up or down in the song, or duplicate it. Useful when you realise a verse is in the wrong place or want to copy a chord pattern to a new section.
-
-Slash chords added — 30+ diagrams including the most common: C/E, G/B, D/F#, Am/E, Am/C, Em/G, Em/B, E/G#, F/C, A/C#, Cadd9/E, Bb/D, Bb/F, G/D, G/A, C/B, D/C, Bm/D and more. All with fingering tips.
-
-Guitar songbook
-Code · HTML 
-Can you enhance the font, colours and feel, think more modern rock band than basic run of the mill
-
-22 Feb
-Let me read the current CSS thoroughly before redesigning.
-
-
-Read all CSS and HTML structure
-Read all CSS and HTML structure
-Now I have the full picture. This is a full visual redesign — new fonts, new palette, new feel. Let me replace the entire CSS block and font imports in one surgical operation.
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Now replace the entire CSS block — from :root to the closing </style>:
-
-
-Replace entire CSS block with modern rock redesign
-Replace entire CSS block with modern rock redesign
-Now update the SVG diagram renderer and the header HTML to use the new fonts — update all hardcoded font references in JS:
-
-
-Ran 2 commands
-Ran 2 commands
-Clean. All old fonts gone, all new fonts confirmed.
-
-
-Presented file
-Presented file
-Here's what changed in the redesign:
-
-Fonts — three new typefaces, each chosen for a specific job:
-
-Bebas Neue — the big condensed display font for the app title, song title in perform mode, section headers (Verse/Chorus etc.), chord diagram names. The kind of font you'd see on a gig poster or album cover.
-Barlow Condensed — all UI chrome (buttons, labels, status bar, toolbar). Tight, modern, legible at small sizes without feeling clinical.
-JetBrains Mono — lyrics, chords, tabs. Proper monospaced so chord positioning stays accurate, but far crisper than Source Code Pro.
-Colour palette — stripped right back to near-black with three hot accent colours:
-
-Hot amber 
-#f5a623 — primary action colour. Title, highlights, perform mode song name, the amber line at the very top of the header and perform screen.
-Electric crimson 
-#e8334a — chords throughout. Punchier and more urgent than the old terracotta.
-Neon teal 
-#00d4aa — tabs, play button, smart scroll indicator.
-Purple for sections and the Ideas panel.
-Everything else is near-black with subtle graduated surfaces.
-Diagram colours updated — amber nut, purple barre, crimson dots. Consistent with the palette.
-
-Details — scan-line texture instead of film grain, a thin two-tone gradient line at the top of the header and perform screen, amber glow on the size slider thumb, speed pips now glow amber/yellow/red instead of green/blue/red.
-
-Guitar songbook
-Code · HTML 
-on the raw lyric section I need to be able to undo and redo depending on if I need to add/ delete something 
-
-It would also be good to be able to convert a line to chords if the edit hasn't red it correctly. For example, if it says Am       N.C (which means no chord) then I still want the Am to be a chord but N.C to be there as written text as it has no recognisable chord diagram in there 
-
-also when you type a song name it is always in all caps but when it saves it can be upper or lower case meaning the user cannot tell until it is saved 
-
-Anything you can do to make it easier to edit, undo, redo, adjust, convert on the edit or raw section will massively enhance user experience as perform will be based on the ability to edit it well 
-
-It's also no really clear how to add chords, i assume this is done when you add lyrics and you add the chords above?
-
-Show more
-23 Feb
-Let me read the current state carefully before making changes.
-
-
-Ran 6 commands
-Ran 6 commands
-Good. Now I have a complete picture. Let me plan all changes carefully:
-
-Raw editor undo/redo — native textarea undo works but is unreliable cross-browser; add explicit Ctrl+Z/Y stack for raw textarea
-Song title always uppercase display — CSS text-transform:uppercase + store as typed, display as uppercase
-Partial chord line conversion — smarter parser that handles Am    N.C — extracts real chords, leaves non-chord tokens (N.C, //, %, NC) as inline text annotations in the lyric
-Onboarding / help tooltip — a clear "How to add chords" guide shown on first use
-Raw editor toolbar — undo/redo buttons above raw textarea, plus a "Convert line" button for lines in raw mode
-Better chord overlay hint — clearer instructions
-Status bar help — clearer wording
-Line-level convert in edit mode — right-click or button on any lyric to split it into chord+lyric
-
-Backup before changes
-Backup before changes
-Step 1 — Song title uppercase display
-
-
-Make song title always display uppercase
-Make song title always display uppercase
-Step 2 — Raw editor toolbar CSS and help overlay CSS
-
-
-Add CSS for raw toolbar, redo button, help overlay, inline chord annotation, NC text
-Add CSS for raw toolbar, redo button, help overlay, inline chord annotation, NC text
-Let me read the current file state thoroughly before touching anything.
-
-
-Ran 5 commands
-Ran 5 commands
-Now I have the full picture. Let me implement everything in one clean pass using a Python script to make multiple targeted changes:
-
-
-Ran 8 commands, edited a file
-Ran 8 commands, edited a file
-Now add a subtle visual "place chord here" hint on empty chord rows via CSS:
-
-
-Add empty chord row hint indicator
-Add empty chord row hint indicator
-Now wire the empty-row class in the JS renderer:
-
-
-Apply empty-row class when no chords on a line
-Apply empty-row class when no chords on a line
-Now final JS check and verify all features:
-
-
-Full verification
-Full verification
-22/23 — the .nc-tag CSS just has a slightly different quote format. JS is clean.
-
-
-Presented file
-Presented file
-Here's everything that went in:
-
-↩ Undo / ↪ Redo everywhere
-
-Edit mode — the existing undo stack now has a matching redo stack. Ctrl+Z undoes, Ctrl+Y (or Ctrl+Shift+Z) redoes. Both ↩ Undo and ↪ Redo buttons in the toolbar grey out when there's nothing to do.
-Raw mode — completely separate undo/redo that tracks every keystroke in the raw textarea. The ↩ and ↪ buttons appear in a toolbar above the text area. Ctrl+Z / Ctrl+Y also work directly in the raw text field.
-Song title always uppercase
-
-The title field now displays in caps as you type — what you see is what you get. It still saves as typed (so transposing etc. works correctly) but visually it's always uppercase from the first character.
-
-Raw mode toolbar — ⚡ Convert Line
-
-A toolbar sits above the raw text with:
-
-↩ Undo / ↪ Redo — raw-specific history
-⚡ Convert Line to Chords — put your cursor on a problem line like Am    N.C. and click this. It extracts Am as a real chord placed at the correct column position, and keeps N.C. as a plain text annotation so it doesn't break the chord/lyric pairing
-✕ Clear Line — wipe the line under your cursor
-A format reminder hint on the right
-Smarter mixed-line parsing
-
-Am    N.C. is now automatically detected as a mixed chord line (has real chords and non-chord tokens). The parser extracts Am as a chord at the right column, and the N.C. drops gracefully into the lyric as an annotation rather than breaking the whole block.
-
-? Help overlay
-
-A full onboarding guide shows automatically the very first time you create a song. It's always accessible via the ? Help button in the toolbar or by pressing ? anywhere outside a text field. It explains step-by-step: adding structure, how to add chords (click the red row above a lyric line), raw mode format, undo/redo, and perform mode.
-
-Chord row discoverability
-
-Empty chord rows now show a faint + chord hint that brightens on hover. Every chord row has a tooltip that says exactly what to do. The status bar hint also links directly to the help guide.
-
-Guitar songbook
-Code · HTML 
-1771872814715_image.png
-what's happening here? splitscreen is fine to see how raw meets the edit view but this isn't doing that. Also if I make a change on edit, this should reflect  even if I change to raw and vice versa
-
-It seems that switching to raw undoes the edit changes at times?
-
-23 Feb
-Looking at the screenshot I can see two issues clearly:
-
-The raw panel is showing blank/empty on the left while the edit view shows on the right — they're not syncing
-Switching modes loses changes — edit→raw or raw→edit discards work
-Let me read the current sync and layout code:
-
-
-Ran 4 commands
-Ran 4 commands
-Now I see the full picture. The core problems are:
-
-Layout — the raw editor and chord editor are siblings in the same .editor-wrap flex row, but when switching modes one hides and the other shows, so they never appear side-by-side as a split. The screenshot shows them incorrectly positioned.
-Sync bug — setMode('raw') calls syncRawFromBlocks() which overwrites whatever is in the raw textarea with the current blocks. But if you've been editing in raw and switch to edit, it calls parseRawIntoBlocks() correctly. The reverse trip (edit→raw) should be fine, but the split view means both are visible and fighting each other.
-The real issue: they should work as a live split — both panels visible simultaneously, syncing in real time as you edit either side.
-Let me fix this properly:
-
-
-Ran 2 commands
-Ran 2 commands
-Now I understand the full structure. The fix is:
-
-Restructure HTML — wrap chord-editor and raw-editor in a proper split container so both can be visible simultaneously in split mode, or one shown at a time
-Change mode logic — instead of show/hide, make "Edit" = chord editor only, "Raw" = raw only, add a "Split" option showing both side by side with live sync
-Live bidirectional sync — raw edits update blocks immediately (debounced), edit changes update raw immediately
-
-Replace mode buttons with Edit/Split/Raw toggle and restructure editor-wrap HTML
-Replace mode buttons with Edit/Split/Raw toggle and restructure editor-wrap HTML
-Now add CSS for the new pane/split structure:
-
-
-Edited 2 files, ran a command
-Edited 2 files, ran a command
-Now also add the Split button CSS:
-
-
-Add split mode button CSS variant
-Add split mode button CSS variant
-Now completely rewrite setMode and the sync logic:
-
-
-Replace setMode, syncRawFromBlocks, rawEdited with live bidirectional sync
-Replace setMode, syncRawFromBlocks, rawEdited with live bidirectional sync
-Now hook syncRawIfNeeded into blockChanged so edit-side changes flow to raw immediately:
-
-
-Ran 2 commands, edited a file
-Ran 2 commands, edited a file
-Now initialise editorWrap in mode-edit on load, and handle the initial state when a song is opened:
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Now add the splitter drag handle JS so users can resize the split panes:
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Now also fix the openSong function so it correctly initialises the mode when switching songs, and fix the enterPerform raw parse:
-
-
-Ran 2 commands, edited 2 files
-Ran 2 commands, edited 2 files
-Now update the help modal to explain split mode, and update the mobile CSS so split collapses gracefully:
-
-
-Update mobile CSS for split mode and raw toolbar
-Update mobile CSS for split mode and raw toolbar
-Also need to fix the #rawToolbar.show class — since it's now always in the pane and shows when pane shows, remove the show toggling:
-
-
-Ran 2 commands
-Ran 2 commands
-The raw toolbar CSS at line 456 says display:flex (from earlier patch) but line 1142 says display:none. The pane-based approach handles visibility through the pane itself now, so we want the toolbar to always be flex when visible:
-
-
-Fix rawToolbar CSS to always display flex (visibility controlled by parent pane)
-Fix rawToolbar CSS to always display flex (visibility controlled by parent pane)
-Also fix the duplicate #rawToolbar{display:flex} at line 456:
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Now final check:
-
-
-Full verification
-Full verification
-16/16, JS clean.
-
-
-Presented file
-Presented file
-Here's what changed:
-
-Three modes instead of two
-
-The Edit / Raw toggle is now Edit | Split | Raw. Split is what was shown in your screenshot — both views visible at once — but now they actually work together properly.
-
-Live bidirectional sync
-
-Edit → Raw: any change in the visual editor (placing a chord, typing a lyric, transposing, moving blocks) immediately updates the raw text on the right in Split mode. No data is lost.
-Raw → Edit: as you type in the raw pane, the visual editor updates after a short pause (600ms debounce so it's not thrashing every keystroke). A subtle amber flash on the edit side confirms it's synced.
-Switching modes no longer loses work
-
-Going from Raw → Edit now correctly parses whatever is currently in the raw textarea first, then renders the chord editor from it.
-Going from Edit → Raw now correctly serialises the current blocks to text first, then shows the raw pane.
-Going from Split to either pure mode just hides one panel — the data stays intact.
-Resizable split The divider bar between the two panes is draggable — grab and pull it left or right to adjust how much space each side gets. The raw pane starts at ~38% width and can go anywhere from 200px to 65% of the window.
-
-Mobile: Split mode stacks vertically (edit on top, raw below) rather than side-by-side since there's no room.
-
-Guitar songbook
-Code · HTML 
-1771878333200_image.png
-get rid of help and also the idea section doesn't really make sense so lets remove at this stage and reiterate that later
-
-23 Feb
-Quick cleanup — remove those two buttons and their panels.
-
-
-Ran 4 commands
-Ran 4 commands
-Now I have the full picture. Let me do a clean removal of everything:
-
-
-Ran 3 commands
-Ran 3 commands
-Claude's response was interrupted
-1771878333200_image.png
-get rid of the idea section doesn't really make sense so lets remove at this stage and reiterate that later
-
-The size bar is hard to drag or use, either make easier or add + - options to adjust
-
-19:05
-
-Check current state
-Check current state
-Good — Ideas and Help are already gone from the last session. Now fix the size slider.
-
-
-Ran 2 commands
-Ran 2 commands
-Now I have the full picture. The fix: replace the fiddly slider with clean − / number / + buttons, matching the same pattern already used in perform mode's size control.
-
-
-Ran a command, edited a file
-Ran a command, edited a file
-Now update applyEditorSize to remove the slider-specific DOM updates, and remove the drag JS:
-
-
-Simplify applyEditorSize — no slider DOM to update
-Simplify applyEditorSize — no slider DOM to update
-Now remove the slider drag JS (no longer needed):
-
-
-Ran 2 commands, edited a file
-Ran 2 commands, edited a file
-Now remove the leftover slider CSS and update the size-wrap to match the perform size button style:
-
-
-Ran 2 commands, edited a file
-Ran 2 commands, edited a file
-Ideas already gone. Now fix the size control — find the exact current state:
-
-
-Ran 2 commands
-Ran 2 commands
-The HTML already has +/− buttons from the previous session. The slider CSS is still there as dead code. Let me clean it all up properly:
-
-
-Ran 2 commands
-Ran 2 commands
-Good — the JS is already clean (no drag code). Just need to fix the CSS and also remove any remaining Ideas CSS. Let me do it all in one go:
-
-
-Ran 2 commands
-Ran 2 commands
-Good — psz-btn is already nicely styled and will work for both toolbar and perform. Now verify:
-
-
-Final verification
-Final verification
-All clean.
-
-
-Presented file
-Presented file
-Done. Two changes:
-
-Ideas panel — fully removed (button, panel, all JS and CSS)
-Size control — the fiddly drag slider is replaced with clean − / number / + buttons, matching the same style already used in perform mode. Ctrl+/Ctrl− keyboard shortcuts still work too, and the number shows the current size at a glance.
-Guitar songbook
-Code · HTML 
-anymore upgrade ideas, think easing editing and playing experience enhancements 
-
-Ease of navigation and clear overall use need to be the focuses 
-
-Reduce frustration of making edits
-
-Run a general debug
-
-19:09
-Let me read the current state thoroughly before suggesting anything.
-
-
-Ran 8 commands
-Ran 8 commands
-Now I have a thorough picture. Let me analyse bugs and opportunities, then implement a focused, high-impact set of improvements:
-
-Bugs found:
-
-btnRedo referenced in openSong but btnRedo may not exist if song opens before redo btn is rendered
-rawPane inline style display:none conflicts with CSS mode classes — CSS specificity battle
-blockChanged(false) called from parseRawIntoBlocks skips undo, but the comment says it passes false intentionally — that's fine, but the raw→edit sync then won't update sbInfo
-charWidth measured once at startup but not recalculated when editor font size changes via +/- buttons (the applyEditorSize does call measureCharWidth — actually OK)
-autoH called in requestAnimationFrame after render but chord row height not recalculated when size changes — chords drift from lyrics
-sectionKeydown Enter inserts pair at wrong index (idx instead of idx+1 for lyric focus)
-Delete/Backspace on section removes block but focus goes nowhere
-Chord overlay can appear off-screen on small windows
-confirmDelete uses native confirm() — jarring
-Navigation/UX improvements:
-
-Song title click-to-rename in sidebar — currently have to open song to rename
-Keyboard shortcut Ctrl+Enter → Perform — buried, not obvious
-Jump to section — no way to quickly navigate long songs in edit mode
-Empty state — new users see nothing useful
-Block count in status misleading — show line/chord count instead
-No way to reorder songs in sidebar
-Perform mode — click anywhere to pause
-No visual feedback when saving
-Let me implement the highest-impact fixes now:
-
-
-Ran 9 commands, edited 3 files
-Ran 9 commands, edited 3 files
-Now add all the CSS for the new features:
-
-
-Add CSS for save pulse, section jump buttons, and improved status bar
-Add CSS for save pulse, section jump buttons, and improved status bar
-Now add a few more targeted improvements — song renaming in sidebar, Ctrl+D duplicate block, and a proper confirm-delete that doesn't use alert():
-
-
-Apply enhancements batch 3
-Apply enhancements batch 3
-Now add CSS for the progress bar and perform click cursor, and add a CSS cursor:pointer to the perform content for click-to-play discoverability:
-
-
-Enhance progress bar CSS to be more clickable and visible
-Enhance progress bar CSS to be more clickable and visible
-Final JS check:
-
-
-Ran 2 commands
-Ran 2 commands
-There's a duplicate — let me clean that and verify:
-
-
-Ran 2 commands, edited a file, read a file
-Ran 2 commands, edited a file, read a file
-Here's everything that went in:
-
-Bug fixes
-
-Section Enter key — pressing Enter on a section header now correctly moves focus to the lyric line below it, not back to the section itself
-Delete block focus — deleting any block now moves focus to the nearest remaining block so you stay in flow
-Chord overlay position — the popup now stays fully on screen even near edges, and flips above the cursor if there's no room below
-Raw pane display — fixed a CSS specificity conflict between inline styles and mode classes that caused the split layout to misbehave
-Editing
-
-Double-click a chord to delete it instantly — no need to click then press Delete
-Tab through chords in the chord input popup — Tab saves and jumps to the next chord in the line
-Chord auto-capitalise — type am and it becomes Am automatically
-Chord suggestions — common chords appear as browser autocomplete options in the input
-Ctrl+D duplicates the currently focused block
-Ctrl+Enter launches Perform mode from anywhere in the editor
-Scroll to new block — adding a section or lyric line smoothly scrolls it into view and selects the text ready to type
-Navigation
-
-Section jump bar — when your song has sections (Verse, Chorus etc.), quick-jump buttons appear in the status bar so you can click straight to any section
-Status bar now shows meaningful info: 2 sections · 18 lines · 42 chords instead of just "20 blocks"
-Save indicator now pulses green when saved and shows "Editing…" while unsaved — much clearer state
-Perform mode
-
-Click anywhere in the scroll area to play/pause (in addition to Space/P)
-P key also toggles play/pause (alongside Space)
-Progress bar is now clickable — click anywhere on it to seek to that position in the song, and it thickens on hover so it's easier to hit
-Page title changes to the song name when in perform mode
-Empty state
-
-The blank screen when no song is selected now has a clear "New Song" button so new users immediately know what to do
-Guitar songbook
-Code · HTML 
-
-
-Want to be notified when Claude responds?
-
-
-
-Claude is AI and can make mistakes. Please double-check responses.
-Guitar songbook · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2414,9 +869,15 @@ header p{
   -webkit-tap-highlight-color:transparent;
   border-radius:var(--radius);
 }
-.pcb-play{border-color:var(--tab);color:var(--tab);font-size:.9rem;padding:6px 14px}
+.pcb-play{border-color:var(--tab);color:var(--tab);font-size:.9rem;padding:6px 14px;min-width:52px}
 .pcb-play:hover{background:var(--tab-glow);box-shadow:0 0 12px var(--tab-glow)}
 .pcb-play.playing{border-color:var(--chord);color:var(--chord2);box-shadow:0 0 12px var(--chord-glow)}
+.pcb-play.counting{border-color:var(--accent);color:var(--accent2);box-shadow:0 0 8px rgba(245,166,35,.3);animation:countblink .8s step-end infinite}
+.pcb-play.ready{border-color:var(--tab);color:var(--tab);box-shadow:0 0 16px rgba(0,212,170,.3);animation:readypulse 1.4s ease-in-out infinite}
+@keyframes readypulse{0%,100%{box-shadow:0 0 8px rgba(0,212,170,.2)}50%{box-shadow:0 0 20px rgba(0,212,170,.5)}}
+.pcb-slower,.pcb-faster{border-color:rgba(245,166,35,.25);color:var(--muted);font-size:1.1rem;min-width:34px;font-weight:700}
+.pcb-slower:hover,.pcb-faster:hover{border-color:var(--accent);color:var(--accent2);background:rgba(245,166,35,.08)}
+@keyframes countblink{0%,100%{opacity:1}50%{opacity:.5}}
 .pcb-reset{border-color:#1a1a1a;color:var(--muted)}
 .pcb-reset:hover{border-color:var(--accent);color:var(--accent)}
 .pcb-exit{border-color:#1a0008;color:#441020}
@@ -2429,8 +890,99 @@ header p{
 .pcb-tap:hover{background:rgba(168,85,247,.1)}
 .pcb-tap.tapping{background:rgba(168,85,247,.25);border-color:var(--purple2);color:var(--purple2)}
 
-/* Progress bar */
-.perf-prog{height:4px;background:#111;flex-shrink:0;cursor:pointer;transition:height .15s}
+/* ── Perform delay control ── */
+.perf-delay-ctrl{
+  display:flex;align-items:center;gap:4px;
+  background:#0d0d0d;border:1px solid #1a1a1a;padding:6px 11px;
+  border-radius:var(--radius);
+}
+
+/* ── Ready overlay ── */
+#readyOverlay{
+  display:none;
+  position:absolute;inset:0;z-index:101;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(2px);
+  pointer-events:none;
+}
+#readyOverlay.active{display:flex}
+#readyInner{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  animation:readyin .35s ease-out;
+}
+@keyframes readyin{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+#readyIcon{
+  font-size:3.5rem;line-height:1;
+  color:var(--tab);
+  text-shadow:0 0 40px rgba(0,212,170,.6);
+}
+#readyMsg{
+  font-family:var(--display);font-size:3rem;letter-spacing:6px;
+  color:var(--text);line-height:1;
+}
+#readySub{
+  font-family:var(--ui);font-size:.8rem;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;
+}
+#readySub kbd{
+  font-family:var(--ui);font-size:.75rem;
+  border:1px solid var(--muted);padding:1px 8px;border-radius:3px;
+  color:var(--text2);background:#1a1a1a;
+}
+
+/* ── Speed flash ── */
+#speedFlash{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--display);font-size:5rem;letter-spacing:4px;
+  color:var(--accent);
+  text-shadow:0 0 40px rgba(245,166,35,.5);
+  pointer-events:none;
+  opacity:0;z-index:200;
+}
+#speedFlash.flash{animation:sflash .7s ease-out forwards}
+@keyframes sflash{
+  0%  {opacity:1;transform:translate(-50%,-50%) scale(1.2)}
+  40% {opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-55%)}
+}
+
+/* ── Countdown overlay ── */
+#countdownOverlay{
+  display:none;
+  position:absolute;inset:0;z-index:100;
+  align-items:center;justify-content:center;
+  pointer-events:none;
+}
+#countdownOverlay.active{display:flex}
+#countdownInner{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+#countdownNum{
+  font-family:var(--display);
+  font-size:8rem;line-height:1;
+  color:var(--accent);
+  text-shadow:0 0 40px rgba(245,166,35,.5), 0 0 80px rgba(245,166,35,.2);
+  animation:cntpulse 1s ease-in-out;
+}
+#countdownLabel{
+  font-family:var(--ui);font-weight:600;
+  font-size:.75rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);
+}
+@keyframes cntpulse{
+  0%  {transform:scale(1.4);opacity:0}
+  30% {opacity:1}
+  80% {transform:scale(1);opacity:1}
+  100%{transform:scale(0.85);opacity:0}
+}
+#countdownOverlay.go #countdownNum{
+  color:var(--tab);
+  text-shadow:0 0 40px rgba(0,212,170,.5);
+  font-size:5rem;
+  animation:cntpulse .6s ease-in-out;
+}
 .perf-prog:hover{height:7px}
 .perf-prog-fill{
   height:100%;
@@ -2462,7 +1014,7 @@ header p{
 }
 
 /* Scroll content */
-#perfScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:40px 28px 200px}
+#perfScroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:40px 28px 200px;position:relative}
 #perfScroll::after{
   content:'';position:fixed;bottom:0;left:0;right:0;height:100px;
   background:linear-gradient(transparent,#000);
@@ -2923,13 +1475,19 @@ Switch to Edit mode to fine-tune chord positions." oninput="rawEdited()"></texta
       <span class="psz-val" id="perfSzVal">16</span>
       <button class="psz-btn" onclick="setPerfSize(+1)">+</button>
     </div>
+    <div class="perf-delay-ctrl">
+      <span class="perf-size-lbl">START DELAY</span>
+      <button class="psz-btn" onclick="changeDelay(-1)">−</button>
+      <span class="psz-val" id="delayVal">4s</span>
+      <button class="psz-btn" onclick="changeDelay(+1)">+</button>
+    </div>
     <div class="perf-ctrls">
       <button class="pcb pcb-play" id="playBtn" onclick="toggleScroll()">▶</button>
       <button class="pcb pcb-reset" onclick="resetScroll()">⟳</button>
       <button class="pcb pcb-smart on" id="btnSmart" onclick="toggleSmart()" title="Smart scroll adapts speed to content">⚡ Smart</button>
       <button class="pcb pcb-tap" id="tapBtn" onclick="tapTempo()" title="Tap to set tempo (T key)">♩ Tap</button>
-      <button class="pcb" style="border-color:var(--muted);color:var(--muted);display:none" id="slowBtn" onclick="setSpeed(Math.max(0,curSpeed-1))">−</button>
-      <button class="pcb" style="border-color:var(--muted);color:var(--muted);display:none" id="fastBtn" onclick="setSpeed(Math.min(11,curSpeed+1))">+</button>
+      <button class="pcb pcb-slower" id="slowBtn" onclick="setSpeed(Math.max(0,curSpeed-1));buildSpips();" title="Slower (−)">−</button>
+      <button class="pcb pcb-faster" id="fastBtn" onclick="setSpeed(Math.min(11,curSpeed+1));buildSpips();" title="Faster (+)">+</button>
       <button class="pcb tbtn-perfdiag" id="btnPerfDiag" onclick="togglePerfDiag()">⬡ Diagrams</button>
       <button class="pcb pcb-exit" onclick="exitPerform()">✕</button>
     </div>
@@ -2941,10 +1499,29 @@ Switch to Edit mode to fine-tune chord positions." oninput="rawEdited()"></texta
       <span id="sectionPreview"></span>
     </div>
   </div>
+  <!-- Ready overlay — shown when scroll is at position, waiting for player -->
+  <div id="readyOverlay">
+    <div id="readyInner">
+      <div id="readyIcon">▶</div>
+      <div id="readyMsg">READY</div>
+      <div id="readySub">Press <kbd>SPACE</kbd> to start scrolling</div>
+    </div>
+  </div>
+
+  <!-- Countdown overlay -->
+  <div id="countdownOverlay">
+    <div id="countdownInner">
+      <div id="countdownNum"></div>
+      <div id="countdownLabel">starting in</div>
+    </div>
+  </div>
+  <!-- Speed change flash -->
+  <div id="speedFlash"></div>
+
   <div class="perf-prog" id="perfProg" onclick="seekPerf(event)" style="cursor:pointer" title="Click to seek"><div class="perf-prog-fill" id="progFill"></div></div>
   <div id="perfDiagBar"></div>
   <div id="perfScroll" onscroll="updateProg()" onclick="handlePerfClick(event)"><div id="perfContent"></div></div>
-  <div class="perf-hint">SPACE / P · play/pause &nbsp;|&nbsp; ← → · speed &nbsp;|&nbsp; T · tap &nbsp;|&nbsp; R · reset &nbsp;|&nbsp; ESC · exit</div>
+  <div class="perf-hint">SPACE · play/pause &nbsp;|&nbsp; + − · speed up/down &nbsp;|&nbsp; ← → · also speed &nbsp;|&nbsp; T · tap tempo &nbsp;|&nbsp; R · restart &nbsp;|&nbsp; ESC · exit</div>
 </div>
 
 <!-- Chord hover tooltip -->
@@ -4232,100 +2809,104 @@ document.getElementById('chordEditor').addEventListener('paste',e=>{
 /* ═══════════════════════════
    PERFORM MODE — SMART SCROLL
 ═══════════════════════════ */
+
+// Speed table — recalibrated so speed 3 (Adagio) suits slow ballads,
+// speed 5 suits most pop songs at moderate tempo, speed 7+ for fast songs.
+// At 16px font a screen shows ~10 lines ≈ 400px. A verse of 8 lines at 80bpm
+// with 2 beats/line ≈ 12s → ~33px/s = speed 3. Feels right.
 const SPEEDS=[
-  {name:'Larghissimo',label:'Very very slow',px:7},
-  {name:'Largo',      label:'Very slow',     px:13},
-  {name:'Larghetto',  label:'Slow',          px:20},
-  {name:'Adagio',     label:'Leisurely',     px:30},
-  {name:'Andante',    label:'Walking pace',  px:42},
-  {name:'Moderato',   label:'Moderate',      px:57},
-  {name:'Allegretto', label:'Slightly fast', px:75},
-  {name:'Allegro',    label:'Fast',          px:98},
-  {name:'Vivace',     label:'Lively',        px:126},
-  {name:'Presto',     label:'Very fast',     px:160},
-  {name:'Prestissimo',label:'Extremely fast',px:205},
-  {name:'Furioso',    label:'Furious',       px:265},
+  {name:'Very slow',   label:'Slow ballad',       px:14},
+  {name:'Slow',        label:'Slow song',         px:22},
+  {name:'Adagio',      label:'Easy pace',         px:33},
+  {name:'Andante',     label:'Walking pace',      px:46},
+  {name:'Moderato',    label:'Moderate tempo',    px:62},
+  {name:'Allegretto',  label:'Fairly fast',       px:80},
+  {name:'Allegro',     label:'Fast song',         px:100},
+  {name:'Vivace',      label:'Lively',            px:124},
+  {name:'Fast',        label:'Up-tempo',          px:152},
+  {name:'Very fast',   label:'Fast song',         px:186},
+  {name:'Presto',      label:'Very fast',         px:226},
+  {name:'Furioso',     label:'Extremely fast',    px:272},
 ];
 const SCLS=['sl','sl','sl','sl','md','md','md','md','ft','ft','ft','ft'];
-let curSpeed=5, scrolling=false, sRAF=null, lastTS=null, sCarry=0;
+// Default to speed 4 (Andante / walking pace) — suits most mid-tempo songs
+let curSpeed=3, scrolling=false, sRAF=null, lastTS=null, sCarry=0;
+
+// Countdown/delay state
+const DELAY_OPTIONS=[0,2,3,4,5,6,8,10,15,20];
+let delayIdx = parseInt(localStorage.getItem('gsb_delay_idx')||'3'); // default 4s
+let countdownTimer=null, countdownRemaining=0;
 
 // Smart scroll state
-let smartScrollOn  = localStorage.getItem('gsb_smart') !== '0'; // on by default
-let baseSpeed      = 5;   // the speed the user has chosen as their "base"
-let targetSpeedPx  = SPEEDS[5].px; // pixels/sec we're interpolating toward
-let currentSpeedPx = SPEEDS[5].px; // actual current px/sec (smooth)
-const SPEED_LERP   = 0.04; // how fast speed transitions (per frame ~60fps = ~2.5s full transition)
+let smartScrollOn  = localStorage.getItem('gsb_smart') !== '0';
+let baseSpeed      = 3;
+let currentSpeedPx = SPEEDS[3].px;
+const SPEED_LERP   = 0.03;
 
 // Tap tempo
 let tapTimes = [];
 
-// Section tracking for "next section" preview
-let perfBlocks = []; // [{type, el, speedHint, sectionName}]
+// Section tracking
+let perfBlocks = [];
 
 function buildSpips() {
   document.getElementById('spips').innerHTML=SPEEDS.map((s,i)=>
-    `<div class="spip ${SCLS[i]} ${i===curSpeed?'on':''}" title="${s.name}" onclick="setSpeed(${i})">${i+1}</div>`
+    `<div class="spip ${SCLS[i]} ${i===curSpeed?'on':''}" title="${s.name}: ${s.label}" onclick="setSpeed(${i})">${i+1}</div>`
   ).join('');
   updateSro();
 }
 function setSpeed(i) {
   curSpeed=i; baseSpeed=i;
-  targetSpeedPx  = SPEEDS[i].px;
-  currentSpeedPx = currentSpeedPx; // don't snap — lerp to new target
+  currentSpeedPx = SPEEDS[i].px; // snap immediately, no lerp lag on manual change
   document.querySelectorAll('.spip').forEach((p,j)=>p.classList.toggle('on',j===i));
   updateSro();
+  if (scrolling) flashSpeed(); // only flash during performance, not setup
 }
 function updateSro() {
   document.getElementById('spName').textContent=SPEEDS[curSpeed].name;
   document.getElementById('spLabel').textContent=SPEEDS[curSpeed].label;
 }
 
-/* ── Smart speed: analyse what's visible on screen ── */
+/* ── Delay control ── */
+function changeDelay(dir) {
+  delayIdx = Math.max(0, Math.min(DELAY_OPTIONS.length-1, delayIdx+dir));
+  localStorage.setItem('gsb_delay_idx', delayIdx);
+  renderDelayVal();
+}
+function renderDelayVal() {
+  const v = DELAY_OPTIONS[delayIdx];
+  document.getElementById('delayVal').textContent = v===0 ? 'Off' : v+'s';
+}
+
+/* ── Smart speed: look ahead at what's coming ── */
 function getSmartSpeedPx() {
-  if (!smartScrollOn || !perfBlocks.length) return SPEEDS[baseSpeed].px;
-  const scroll = document.getElementById('perfScroll');
+  const base = SPEEDS[baseSpeed].px;
+  if (!smartScrollOn || !perfBlocks.length) return base;
+  const scroll  = document.getElementById('perfScroll');
   const viewTop = scroll.scrollTop;
   const viewH   = scroll.clientHeight;
-  // Look for the block that's in the upper 40% of the viewport (what you're about to play)
-  const lookAhead = viewTop + viewH * 0.35;
+  // Look 1/3 of the way down the visible area — the "next thing to play"
+  const lookPt  = viewTop + viewH * 0.33;
 
-  let bestBlock = null;
-  let bestDist  = Infinity;
+  let best = null, bestDist = Infinity;
   for (const b of perfBlocks) {
     const bTop = b.el.offsetTop;
-    if (bTop >= viewTop - 10) {
-      const dist = Math.abs(bTop - lookAhead);
-      if (dist < bestDist) { bestDist = dist; bestBlock = b; }
-    }
+    if (bTop < viewTop - 40) continue; // already scrolled past
+    const d = Math.abs(bTop - lookPt);
+    if (d < bestDist) { bestDist = d; best = b; }
   }
+  if (!best) return base;
 
-  if (!bestBlock) return SPEEDS[baseSpeed].px;
+  updateSectionPreview(best);
+  updateSmartBarHint(best.speedHint);
 
-  const hint = bestBlock.speedHint;
-  const base = SPEEDS[baseSpeed].px;
-
-  // Update UI labels
-  updateSectionPreview(bestBlock);
-  updateSmartBarHint(hint);
-
-  // Apply speed multiplier based on block type and hint
-  if (hint === 'section-pause') {
-    // Brief slow-down approaching a section header
-    return base * 0.3;
-  } else if (hint === 'chords-only') {
-    // Pure chord line — slow down to read changes
-    return base * 0.65;
-  } else if (hint === 'tab') {
-    // Tab / solo — slowest (lots to read)
-    return base * 0.45;
-  } else if (hint === 'lyric-dense') {
-    // Long lyric line — speed up slightly (less to read musically)
-    return base * 1.2;
-  } else if (hint === 'lyric-sparse') {
-    // Short lyric / few words — normal
-    return base * 1.0;
+  switch (best.speedHint) {
+    case 'section-pause': return base * 0.2;  // almost stop at section markers
+    case 'chords-only':   return base * 0.55; // chord-change line — slow to read
+    case 'tab':           return base * 0.35; // tab — slowest, lots of detail
+    case 'lyric-dense':   return base * 1.1;  // dense lyric — slight speed-up
+    default:              return base;
   }
-  return base;
 }
 
 function updateSectionPreview(block) {
@@ -4409,52 +2990,210 @@ function buildPerfContent(song) {
 }
 
 function enterPerform() {
-  if (editorMode==='raw' || editorMode==='split'){ parseRawIntoBlocks(); renderChordEditor(); }
+  if (editorMode==='raw'||editorMode==='split'){ parseRawIntoBlocks(); renderChordEditor(); }
   forceSave();
   const song=getSong(); if(!song) return;
-  document.getElementById('pTitle').textContent=song.title||'Untitled';
-  document.title = (song.title ? song.title.toUpperCase() + ' — ' : '') + 'Guitar Songbook';
-  const sub=[song.artist,song.key?'Key: '+song.key:''].filter(Boolean).join(' · ');
-  document.getElementById('pSub').textContent=sub;
+  document.getElementById('pTitle').textContent = song.title||'Untitled';
+  document.title = (song.title ? song.title.toUpperCase()+' — ' : '')+'Guitar Songbook';
+  const sub = [song.artist, song.key?'Key: '+song.key:''].filter(Boolean).join(' · ');
+  document.getElementById('pSub').textContent = sub;
   buildPerfContent(song); buildSpips();
-  buildPerfDiagBar(song);
-  applyPerfDiag();
-  stopScroll(); sCarry=0; lastTS=null;
+  buildPerfDiagBar(song); applyPerfDiag();
+  cancelCountdown(); stopScroll();
+  hideReadyOverlay();
+  readyShown = false;
+  sCarry=0; lastTS=null;
   currentSpeedPx = SPEEDS[curSpeed].px;
-  targetSpeedPx  = SPEEDS[curSpeed].px;
   tapTimes = [];
-  document.getElementById('perfScroll').scrollTop=0;
-  document.getElementById('progFill').style.width='0%';
+  document.getElementById('perfScroll').scrollTop = 0;
+  document.getElementById('progFill').style.width = '0%';
   applySmartBtn();
-  const isMobile=window.innerWidth<=700;
-  document.getElementById('slowBtn').style.display=isMobile?'':'none';
-  document.getElementById('fastBtn').style.display=isMobile?'':'none';
   document.getElementById('perfOverlay').classList.add('show');
+  // Restore saved delay
+  delayIdx = parseInt(localStorage.getItem('gsb_delay_idx')||'3');
+  renderDelayVal();
 }
-function exitPerform(){ stopScroll(); document.getElementById('perfOverlay').classList.remove('show'); document.title='Guitar Songbook'; }
+
+function exitPerform() {
+  cancelCountdown(); stopScroll();
+  document.getElementById('perfOverlay').classList.remove('show');
+  document.title = 'Guitar Songbook';
+}
+
 function handlePerfClick(e) {
-  // Only toggle if clicking the scroll area itself, not buttons/content
-  if (e.target === document.getElementById('perfScroll') || e.target === document.getElementById('perfContent')) {
+  if (e.target===document.getElementById('perfScroll')||e.target===document.getElementById('perfContent')) {
     toggleScroll();
   }
 }
-function toggleScroll(){ scrolling?stopScroll():startScroll(); }
-function startScroll(){ scrolling=true; lastTS=null; sRAF=requestAnimationFrame(scrollStep); updatePlayBtn(); }
-function stopScroll(){ scrolling=false; if(sRAF){cancelAnimationFrame(sRAF);sRAF=null;} updatePlayBtn(); }
+
+/* ── Countdown ── */
+function startCountdown(onDone) {
+  const delay = DELAY_OPTIONS[delayIdx];
+  if (!delay) { onDone(); return; }
+  countdownRemaining = delay;
+  showCountdownTick();
+  countdownTimer = setInterval(()=>{
+    countdownRemaining--;
+    if (countdownRemaining <= 0) {
+      clearInterval(countdownTimer); countdownTimer=null;
+      // Flash GO then start
+      const ov=document.getElementById('countdownOverlay');
+      const num=document.getElementById('countdownNum');
+      const lbl=document.getElementById('countdownLabel');
+      ov.classList.add('go'); num.textContent='GO'; lbl.textContent='';
+      setTimeout(()=>{ ov.classList.remove('active','go'); onDone(); }, 700);
+    } else {
+      showCountdownTick();
+    }
+  }, 1000);
+  updatePlayBtn();
+}
+
+function showCountdownTick() {
+  const ov  = document.getElementById('countdownOverlay');
+  const num = document.getElementById('countdownNum');
+  const lbl = document.getElementById('countdownLabel');
+  ov.classList.remove('go');
+  ov.classList.add('active');
+  num.textContent = countdownRemaining;
+  lbl.textContent = 'scroll starts in';
+  // Retrigger CSS animation each tick
+  num.style.animation='none'; void num.offsetWidth; num.style.animation='';
+}
+
+function cancelCountdown() {
+  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer=null; }
+  const ov = document.getElementById('countdownOverlay');
+  if (ov) { ov.classList.remove('active','go'); }
+  countdownRemaining = 0;
+}
+
+/* ══════════════════════════════════════════════
+   PLAY / PAUSE / READY POSITION
+   
+   Flow:
+   1. Player hits ▶ for first time → scroll jumps to top of
+      content, shows "READY" overlay → player gets eyes on
+      the first line while still in starting position
+   2. Player hits ▶ again (or Space) → countdown runs, then scroll starts
+   3. While scrolling: + / - keys adjust speed live with a flash
+   4. Pause / resume at any time — no reset
+═══════════════════════════════════════════════ */
+
+let readyShown = false; // true once we've shown ready position for this session
+
+function toggleScroll() {
+  if (countdownTimer) { cancelCountdown(); updatePlayBtn(); return; }
+
+  if (scrolling) {
+    // Pause
+    stopScroll();
+    return;
+  }
+
+  // Not yet scrolling — are we in "ready" state?
+  if (!readyShown && document.getElementById('perfScroll').scrollTop < 2) {
+    // First play: scroll to position and show ready overlay
+    showReadyPosition();
+    return;
+  }
+
+  // Already at position, start with countdown
+  hideReadyOverlay();
+  startCountdown(() => startScroll());
+}
+
+function showReadyPosition() {
+  readyShown = true;
+  const el = document.getElementById('perfScroll');
+
+  // Scroll to top of first real content block (skip any blank space)
+  el.scrollTop = 0;
+
+  // Show the ready overlay
+  const ov = document.getElementById('readyOverlay');
+  ov.classList.add('active');
+  updatePlayBtn();
+}
+
+function hideReadyOverlay() {
+  document.getElementById('readyOverlay').classList.remove('active');
+}
+
+/* ── Countdown ── */
+function startCountdown(onDone) {
+  const delay = DELAY_OPTIONS[delayIdx];
+  if (!delay) { onDone(); return; }
+  countdownRemaining = delay;
+  showCountdownTick();
+  countdownTimer = setInterval(()=>{
+    countdownRemaining--;
+    if (countdownRemaining <= 0) {
+      clearInterval(countdownTimer); countdownTimer=null;
+      const ov=document.getElementById('countdownOverlay');
+      const num=document.getElementById('countdownNum');
+      const lbl=document.getElementById('countdownLabel');
+      ov.classList.add('go'); num.textContent='GO'; lbl.textContent='';
+      setTimeout(()=>{ ov.classList.remove('active','go'); onDone(); }, 700);
+    } else {
+      showCountdownTick();
+    }
+  }, 1000);
+  updatePlayBtn();
+}
+
+function cancelCountdown() {
+  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer=null; }
+  const ov = document.getElementById('countdownOverlay');
+  if (ov) { ov.classList.remove('active','go'); }
+  countdownRemaining = 0;
+}
+
+function showCountdownTick() {
+  const ov  = document.getElementById('countdownOverlay');
+  const num = document.getElementById('countdownNum');
+  const lbl = document.getElementById('countdownLabel');
+  ov.classList.remove('go');
+  ov.classList.add('active');
+  num.textContent = countdownRemaining;
+  lbl.textContent = 'scroll starts in';
+  num.style.animation='none'; void num.offsetWidth; num.style.animation='';
+}
+
+function startScroll() {
+  scrolling=true; lastTS=null; sCarry=0;
+  sRAF=requestAnimationFrame(scrollStep);
+  updatePlayBtn();
+}
+function stopScroll() {
+  scrolling=false;
+  if (sRAF) { cancelAnimationFrame(sRAF); sRAF=null; }
+  updatePlayBtn();
+}
+
+/* Flash the new speed name briefly on screen */
+let speedFlashTimer = null;
+function flashSpeed() {
+  const el = document.getElementById('speedFlash');
+  if (!el) return;
+  el.textContent = SPEEDS[curSpeed].name.toUpperCase();
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+  clearTimeout(speedFlashTimer);
+  speedFlashTimer = setTimeout(()=>el.classList.remove('flash'), 800);
+}
 
 function scrollStep(ts) {
-  if(!scrolling) return;
-  const el=document.getElementById('perfScroll');
-  const max=el.scrollHeight-el.clientHeight;
-  if(lastTS!==null){
-    // Smart speed target
-    const smartPx = getSmartSpeedPx();
-    // Lerp currentSpeedPx toward smartPx
-    currentSpeedPx += (smartPx - currentSpeedPx) * SPEED_LERP;
-
-    const raw=currentSpeedPx*(ts-lastTS)/1000+sCarry;
-    const w=Math.floor(raw); sCarry=raw-w; el.scrollTop+=w;
-    if(el.scrollTop>=max-1){el.scrollTop=max;stopScroll();updateProg();return;}
+  if (!scrolling) return;
+  const el  = document.getElementById('perfScroll');
+  const max = el.scrollHeight - el.clientHeight;
+  if (lastTS !== null) {
+    const target = getSmartSpeedPx();
+    currentSpeedPx += (target - currentSpeedPx) * SPEED_LERP;
+    const raw = currentSpeedPx*(ts-lastTS)/1000 + sCarry;
+    const px  = Math.floor(raw); sCarry=raw-px; el.scrollTop+=px;
+    if (el.scrollTop >= max-1) { el.scrollTop=max; stopScroll(); updateProg(); return; }
     updateProg();
   }
   lastTS=ts; sRAF=requestAnimationFrame(scrollStep);
@@ -4462,15 +3201,39 @@ function scrollStep(ts) {
 
 function seekPerf(e) {
   const bar = document.getElementById('perfProg');
-  const rect = bar.getBoundingClientRect();
-  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  const el = document.getElementById('perfScroll');
-  el.scrollTop = ratio * (el.scrollHeight - el.clientHeight);
+  const r   = bar.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (e.clientX-r.left)/r.width));
+  document.getElementById('perfScroll').scrollTop = ratio*(document.getElementById('perfScroll').scrollHeight-document.getElementById('perfScroll').clientHeight);
   updateProg();
 }
-function resetScroll(){ stopScroll(); sCarry=0; lastTS=null; currentSpeedPx=SPEEDS[curSpeed].px; document.getElementById('perfScroll').scrollTop=0; document.getElementById('progFill').style.width='0%'; }
-function updatePlayBtn(){ const b=document.getElementById('playBtn'); b.textContent=scrolling?'⏸':'▶'; b.classList.toggle('playing',scrolling); }
-function updateProg(){ const el=document.getElementById('perfScroll'); const max=el.scrollHeight-el.clientHeight; document.getElementById('progFill').style.width=(max>0?(el.scrollTop/max)*100:0)+'%'; }
+function resetScroll() {
+  cancelCountdown(); stopScroll();
+  hideReadyOverlay();
+  readyShown = false; // allow ready position to show again on next play
+  sCarry=0; lastTS=null;
+  currentSpeedPx = SPEEDS[curSpeed].px;
+  document.getElementById('perfScroll').scrollTop=0;
+  document.getElementById('progFill').style.width='0%';
+}
+function updatePlayBtn() {
+  const b = document.getElementById('playBtn');
+  if (countdownTimer) {
+    b.textContent='⏹ '+countdownRemaining;
+    b.classList.remove('playing','ready'); b.classList.add('counting');
+  } else if (readyShown && !scrolling) {
+    b.textContent='▶';
+    b.classList.remove('playing','counting'); b.classList.add('ready');
+  } else {
+    b.textContent = scrolling ? '⏸' : '▶';
+    b.classList.toggle('playing', scrolling);
+    b.classList.remove('counting','ready');
+  }
+}
+function updateProg() {
+  const el=document.getElementById('perfScroll');
+  const max=el.scrollHeight-el.clientHeight;
+  document.getElementById('progFill').style.width=(max>0?(el.scrollTop/max)*100:0)+'%';
+}
 
 /* ── Smart scroll toggle ── */
 function toggleSmart() {
@@ -4518,13 +3281,11 @@ function tapTempo() {
   const avgMs = intervals.reduce((a,b)=>a+b,0)/intervals.length;
   // Map tap interval to scroll speed: 300ms tap = fast, 1200ms = slow
   // Formula: px/sec = 8000 / avgMs (tuned empirically)
-  const tappedPx = Math.max(7, Math.min(265, 8000 / avgMs));
-  // Find closest named speed
-  let closest = 0;
-  let minDiff  = Infinity;
+  // Map tap interval to px/sec. Empirically: 500ms tap (120bpm) → ~50px/s (speed 4)
+  const tappedPx = Math.max(14, Math.min(272, 7500 / avgMs));
+  let closest=0, minDiff=Infinity;
   SPEEDS.forEach((s,i)=>{ const d=Math.abs(s.px-tappedPx); if(d<minDiff){minDiff=d;closest=i;} });
-  setSpeed(closest);
-  // Flash tap indicator
+  setSpeed(closest); buildSpips();
   const btn = document.getElementById('tapBtn');
   if (btn) { btn.classList.add('tapping'); setTimeout(()=>btn.classList.remove('tapping'),200); }
 }
@@ -4535,11 +3296,13 @@ function tapTempo() {
 document.addEventListener('keydown',e=>{
   const inPerf=document.getElementById('perfOverlay').classList.contains('show');
   if(inPerf){
+    // Space / P / K = play-pause (also dismisses ready overlay)
     if(e.key===' '||e.key==='k'||e.key==='p'||e.key==='P'){e.preventDefault();toggleScroll();}
-    if(e.key==='Escape') exitPerform();
-    if(e.key==='ArrowLeft'||e.key==='-'){e.preventDefault();setSpeed(Math.max(0,curSpeed-1));}
-    if(e.key==='ArrowRight'||e.key==='='||e.key==='+'){e.preventDefault();setSpeed(Math.min(11,curSpeed+1));}
-    if(e.key==='r'||e.key==='R') resetScroll();
+    if(e.key==='Escape'){ if(countdownTimer){cancelCountdown();}else if(readyShown){resetScroll();}else{exitPerform();} }
+    // Speed: arrow keys AND +/- work the same, flash the speed name
+    if(e.key==='ArrowLeft' ||e.key==='-'||e.key==='_'){e.preventDefault();setSpeed(Math.max(0,curSpeed-1));buildSpips();}
+    if(e.key==='ArrowRight'||e.key==='='||e.key==='+'||e.key===']'){e.preventDefault();setSpeed(Math.min(11,curSpeed+1));buildSpips();}
+    if(e.key==='r'||e.key==='R'){e.preventDefault();resetScroll();}
     if(e.key==='t'||e.key==='T'){e.preventDefault();tapTempo();}
     if(e.key==='s'||e.key==='S'){e.preventDefault();toggleSmart();}
     return;
