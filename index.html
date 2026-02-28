@@ -948,41 +948,8 @@ header p{
   100%{opacity:0;transform:translate(-50%,-55%)}
 }
 
-/* ── Countdown overlay ── */
-#countdownOverlay{
-  display:none;
-  position:absolute;inset:0;z-index:100;
-  align-items:center;justify-content:center;
-  pointer-events:none;
-}
-#countdownOverlay.active{display:flex}
-#countdownInner{
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-}
-#countdownNum{
-  font-family:var(--display);
-  font-size:8rem;line-height:1;
-  color:var(--accent);
-  text-shadow:0 0 40px rgba(245,166,35,.5), 0 0 80px rgba(245,166,35,.2);
-  animation:cntpulse 1s ease-in-out;
-}
-#countdownLabel{
-  font-family:var(--ui);font-weight:600;
-  font-size:.75rem;letter-spacing:3px;text-transform:uppercase;
-  color:var(--muted);
-}
-@keyframes cntpulse{
-  0%  {transform:scale(1.4);opacity:0}
-  30% {opacity:1}
-  80% {transform:scale(1);opacity:1}
-  100%{transform:scale(0.85);opacity:0}
-}
-#countdownOverlay.go #countdownNum{
-  color:var(--tab);
-  text-shadow:0 0 40px rgba(0,212,170,.5);
-  font-size:5rem;
-  animation:cntpulse .6s ease-in-out;
-}
+/* ── Countdown — silent delay, no visible overlay ── */
+#countdownOverlay{display:none !important} /* hidden — delay still runs, just no visible countdown */
 .perf-prog:hover{height:7px}
 .perf-prog-fill{
   height:100%;
@@ -1521,7 +1488,7 @@ Switch to Edit mode to fine-tune chord positions." oninput="rawEdited()"></texta
   <div class="perf-prog" id="perfProg" onclick="seekPerf(event)" style="cursor:pointer" title="Click to seek"><div class="perf-prog-fill" id="progFill"></div></div>
   <div id="perfDiagBar"></div>
   <div id="perfScroll" onscroll="updateProg()" onclick="handlePerfClick(event)"><div id="perfContent"></div></div>
-  <div class="perf-hint">SPACE · play/pause &nbsp;|&nbsp; + − · speed up/down &nbsp;|&nbsp; ← → · also speed &nbsp;|&nbsp; T · tap tempo &nbsp;|&nbsp; R · restart &nbsp;|&nbsp; ESC · exit</div>
+  <div class="perf-hint">SPACE · play/pause &nbsp;|&nbsp; + − · speed &nbsp;|&nbsp; T · tap tempo &nbsp;|&nbsp; R · restart &nbsp;|&nbsp; ESC · exit</div>
 </div>
 
 <!-- Chord hover tooltip -->
@@ -2815,22 +2782,22 @@ document.getElementById('chordEditor').addEventListener('paste',e=>{
 // At 16px font a screen shows ~10 lines ≈ 400px. A verse of 8 lines at 80bpm
 // with 2 beats/line ≈ 12s → ~33px/s = speed 3. Feels right.
 const SPEEDS=[
-  {name:'Very slow',   label:'Slow ballad',       px:14},
-  {name:'Slow',        label:'Slow song',         px:22},
-  {name:'Adagio',      label:'Easy pace',         px:33},
-  {name:'Andante',     label:'Walking pace',      px:46},
-  {name:'Moderato',    label:'Moderate tempo',    px:62},
-  {name:'Allegretto',  label:'Fairly fast',       px:80},
-  {name:'Allegro',     label:'Fast song',         px:100},
-  {name:'Vivace',      label:'Lively',            px:124},
-  {name:'Fast',        label:'Up-tempo',          px:152},
-  {name:'Very fast',   label:'Fast song',         px:186},
-  {name:'Presto',      label:'Very fast',         px:226},
-  {name:'Furioso',     label:'Extremely fast',    px:272},
+  {name:'Very slow',  label:'Slow ballad',     px:6},
+  {name:'Slow',       label:'Slow song',        px:9},
+  {name:'Easygoing',  label:'Relaxed pace',     px:12},
+  {name:'Gentle',     label:'Easy pace',        px:16},
+  {name:'Steady',     label:'Comfortable',      px:20},
+  {name:'Walking',    label:'Mid tempo',        px:25},
+  {name:'Moderate',   label:'Flowing',          px:31},
+  {name:'Up tempo',   label:'Lively',           px:38},
+  {name:'Brisk',      label:'Upbeat',           px:46},
+  {name:'Fast',       label:'Fast song',        px:54},
+  {name:'Very fast',  label:'Racing',           px:63},
+  {name:'Maximum',    label:'Flat out',         px:72},
 ];
-const SCLS=['sl','sl','sl','sl','md','md','md','md','ft','ft','ft','ft'];
-// Default to speed 4 (Andante / walking pace) — suits most mid-tempo songs
-let curSpeed=3, scrolling=false, sRAF=null, lastTS=null, sCarry=0;
+const SCLS=['sl','sl','sl','sl','sl','sl','md','md','md','ft','ft','ft'];
+// Default to speed 5 (Steady / comfortable) — suits most songs
+let curSpeed=4, scrolling=false, sRAF=null, lastTS=null, sCarry=0;
 
 // Countdown/delay state
 const DELAY_OPTIONS=[0,2,3,4,5,6,8,10,15,20];
@@ -2839,8 +2806,8 @@ let countdownTimer=null, countdownRemaining=0;
 
 // Smart scroll state
 let smartScrollOn  = localStorage.getItem('gsb_smart') !== '0';
-let baseSpeed      = 3;
-let currentSpeedPx = SPEEDS[3].px;
+let baseSpeed      = 4;
+let currentSpeedPx = SPEEDS[4].px;
 const SPEED_LERP   = 0.03;
 
 // Tap tempo
@@ -2901,10 +2868,10 @@ function getSmartSpeedPx() {
   updateSmartBarHint(best.speedHint);
 
   switch (best.speedHint) {
-    case 'section-pause': return base * 0.2;  // almost stop at section markers
-    case 'chords-only':   return base * 0.55; // chord-change line — slow to read
-    case 'tab':           return base * 0.35; // tab — slowest, lots of detail
-    case 'lyric-dense':   return base * 1.1;  // dense lyric — slight speed-up
+    case 'section-pause': return base * 0.15; // almost stop at section markers — give time to find place
+    case 'chords-only':   return base * 0.6;  // chord-change line — slow right down to read shapes
+    case 'tab':           return base * 0.4;  // tab — very slow, lots of detail to read
+    case 'lyric-dense':   return base * 1.05; // dense lyric — tiny nudge up
     default:              return base;
   }
 }
@@ -3036,12 +3003,7 @@ function startCountdown(onDone) {
     countdownRemaining--;
     if (countdownRemaining <= 0) {
       clearInterval(countdownTimer); countdownTimer=null;
-      // Flash GO then start
-      const ov=document.getElementById('countdownOverlay');
-      const num=document.getElementById('countdownNum');
-      const lbl=document.getElementById('countdownLabel');
-      ov.classList.add('go'); num.textContent='GO'; lbl.textContent='';
-      setTimeout(()=>{ ov.classList.remove('active','go'); onDone(); }, 700);
+      onDone();
     } else {
       showCountdownTick();
     }
@@ -3130,11 +3092,7 @@ function startCountdown(onDone) {
     countdownRemaining--;
     if (countdownRemaining <= 0) {
       clearInterval(countdownTimer); countdownTimer=null;
-      const ov=document.getElementById('countdownOverlay');
-      const num=document.getElementById('countdownNum');
-      const lbl=document.getElementById('countdownLabel');
-      ov.classList.add('go'); num.textContent='GO'; lbl.textContent='';
-      setTimeout(()=>{ ov.classList.remove('active','go'); onDone(); }, 700);
+      onDone();
     } else {
       showCountdownTick();
     }
@@ -3218,10 +3176,10 @@ function resetScroll() {
 function updatePlayBtn() {
   const b = document.getElementById('playBtn');
   if (countdownTimer) {
-    b.textContent='⏹ '+countdownRemaining;
+    b.textContent = '●';  // silent pulse — delay running, scroll about to start
     b.classList.remove('playing','ready'); b.classList.add('counting');
   } else if (readyShown && !scrolling) {
-    b.textContent='▶';
+    b.textContent = '▶';
     b.classList.remove('playing','counting'); b.classList.add('ready');
   } else {
     b.textContent = scrolling ? '⏸' : '▶';
